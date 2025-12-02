@@ -7,10 +7,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 export default defineConfig({
-  root: './',
-  publicDir: './public',
+  root: './src/pages',
+  publicDir: '../../public',
   build: {
-    outDir: './dist',
+    outDir: '../../dist',
     emptyOutDir: true,
     rollupOptions: {
       input: {
