@@ -1,0 +1,68 @@
+<!-- Header Component -->
+<header class="header">
+  <div class="header__container container">
+    <!-- Logo -->
+    <a href="index.html" class="header__logo">
+      <svg class="header__logo-icon" fill="none" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+        <path d="M19.9998 3.33325L3.33317 33.3333H36.6665L19.9998 3.33325Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></path>
+        <path d="M11.6668 33.3333L19.9998 18.3333L28.3332 33.3333" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></path>
+        <path d="M3.33317 33.3333C8.6366 33.3333 13.524 33.3333 17.4998 33.3333" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></path>
+        <path d="M36.6668 33.3333C31.3634 33.3333 26.476 33.3333 22.5002 33.3333" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></path>
+        <path d="M19.9998 3.33325L17.4998 8.33325" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></path>
+      </svg>
+      <span>Thanout</span>
+    </a>
+
+    <!-- Navigation principale -->
+    <nav class="header__nav">
+      <a href="index.html" class="header__nav-link active">Accueil</a>
+      <a href="products.html" class="header__nav-link">Produits</a>
+      <a href="categories.html" class="header__nav-link">Catégories</a>
+      <a href="#" class="header__nav-link">Promotions</a>
+      <a href="#" class="header__nav-link">Nouveautés</a>
+    </nav>
+
+    <!-- Barre de recherche -->
+    <div class="header__search">
+      <div class="header__search-wrapper">
+        <span class="header__search-icon material-symbols-outlined">search</span>
+        <input type="text" class="header__search-input" placeholder="Rechercher un produit..." />
+      </div>
+    </div>
+
+    <!-- Actions utilisateur -->
+    <div class="header__actions">
+      <button class="header__action-btn" aria-label="Rechercher">
+        <span class="material-symbols-outlined">search</span>
+      </button>
+      
+      <button class="header__action-btn" aria-label="Compte">
+        <span class="material-symbols-outlined">person</span>
+      </button>
+      
+      <button class="header__action-btn" aria-label="Favoris">
+        <span class="material-symbols-outlined">favorite</span>
+      </button>
+      
+      <button class="header__action-btn" aria-label="Panier">
+        <span class="material-symbols-outlined">shopping_bag</span>
+        <span class="header__cart-badge">3</span>
+      </button>
+
+      <button class="header__action-btn md:hidden" id="mobile-menu-toggle" aria-label="Menu">
+        <span class="material-symbols-outlined">menu</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Menu mobile -->
+  <div class="header__mobile-menu" id="mobile-menu">
+    <nav class="header__mobile-nav">
+      <a href="index.html" class="header__mobile-nav-link">Accueil</a>
+      <a href="products.html" class="header__mobile-nav-link">Produits</a>
+      <a href="categories.html" class="header__mobile-nav-link">Catégories</a>
+      <a href="#" class="header__mobile-nav-link">Promotions</a>
+      <a href="#" class="header__mobile-nav-link">Nouveautés</a>
+    </nav>
+  </div>
+</header>

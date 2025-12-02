@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html class="light" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Page d'accueil Thanout (Algérie)</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings:
+            'FILL' 0,
+            'wght' 400,
+            'GRAD' 0,
+            'opsz' 24
+        }
+    </style>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#135bec",
+              "background-light": "#f6f6f8",
+              "background-dark": "#101622",
+            },
+            fontFamily: {
+              "display": ["Inter", "sans-serif"],
+              "arabic": ["Noto Sans Arabic", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark text-gray-900 dark:text-gray-100">
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<div class="flex flex-1 justify-center">
+<div class="layout-content-container flex flex-col w-full">
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-gray-200 dark:border-gray-800 px-4 sm:px-6 lg:px-10 py-3 w-full bg-background-light dark:bg-background-dark sticky top-0 z-50">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-3 text-gray-900 dark:text-gray-100">
+<div class="w-8 h-8 text-primary">
+<svg fill="currentColor" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+<path d="M16 4L0 28H32L16 4Z" fill-opacity="0.5"></path>
+<path d="M24 14L16 28L8 14L16 4L24 14Z"></path>
+</svg>
+</div>
+<h2 class="text-xl font-bold tracking-tight">Thanout</h2>
+</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-sm font-medium hover:text-primary dark:hover:text-primary transition-colors" href="#">Accueil</a>
+<a class="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors" href="#">Produits</a>
+<a class="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors" href="#">Catégories</a>
+<a class="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors" href="#">Promotions</a>
+<a class="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors" href="#">Nouveautés</a>
+</nav>
+</div>
+<div class="flex flex-1 justify-end gap-2 sm:gap-4">
+<label class="hidden sm:flex flex-col min-w-40 !h-10 max-w-64">
+<div class="flex w-full flex-1 items-stretch rounded-lg h-full">
+<div class="text-gray-500 dark:text-gray-400 flex bg-gray-100 dark:bg-gray-800 items-center justify-center pl-3 rounded-l-lg border-r-0">
+<span class="material-symbols-outlined text-xl">search</span>
+</div>
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-gray-900 dark:text-gray-100 focus:outline-0 focus:ring-2 focus:ring-primary/50 border-none bg-gray-100 dark:bg-gray-800 h-full placeholder:text-gray-500 dark:placeholder:text-gray-400 px-4 rounded-l-none border-l-0 pl-2 text-sm" placeholder="Rechercher un produit..." value=""/>
+</div>
+</label>
+<div class="flex gap-2">
+<button class="flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 w-10 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 text-sm font-bold transition-colors">
+<span class="material-symbols-outlined text-xl">person</span>
+</button>
+<button class="flex sm:hidden cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 w-10 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 text-sm font-bold transition-colors">
+<span class="material-symbols-outlined text-xl">search</span>
+</button>
+<button class="flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 w-10 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 text-sm font-bold transition-colors">
+<span class="material-symbols-outlined text-xl">favorite</span>
+</button>
+<button class="flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 w-10 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 text-sm font-bold transition-colors">
+<span class="material-symbols-outlined text-xl">shopping_bag</span>
+</button>
+</div>
+</div>
+</header>
+<main class="flex-1 px-4 sm:px-6 lg:px-10 py-8">
+<div class="@container">
+<div class="@[480px]:p-0">
+<div class="flex min-h-[480px] flex-col gap-6 bg-cover bg-center bg-no-repeat @[480px]:gap-8 @[480px]:rounded-xl items-center justify-center p-4 text-center" data-alt="Vue panoramique d'Alger avec la mer Méditerranée en arrière-plan" style='background-image: linear-gradient(rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.6) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuASY_erf9DEm9v8DfsUxir1bFQvxAWZdc8jJalEg0TLlkeYgD3grSkIJdjXM8R293LP_c3YtDVMIFkru3pctjWaHA6xegjceP34kGllxzoZzR3RCL9Z9teeDUHtxGovB2bs3YQk7eV7Xee12DTfFXJLwEsiI7LeqWefFGhlBRtpi3t6rZ3UKcELKU65MWuqeZKKZaYfwPtYtWab1zfC6-wgDuAp-J8HK7HSxFebbZ9yuWWfIMSzzyD9vBXn5qjgMYrDGvGRfnKAK1tq");'>
+<div class="flex flex-col gap-4">
+<h1 class="text-white text-4xl font-black leading-tight tracking-tight sm:text-5xl md:text-6xl">Tout ce dont vous avez besoin, à portée de clic.</h1>
+<p class="text-white/90 text-base font-normal leading-normal @[480px]:text-lg max-w-xl mx-auto">Découvrez des milliers de produits et profitez d'offres exclusives sur Thanout.</p>
+</div>
+<button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-6 bg-primary text-white text-base font-bold leading-normal tracking-wide hover:bg-primary/90 transition-colors focus:ring-4 focus:ring-primary/50">
+<span>Voir toutes les offres</span>
+</button>
+</div>
+</div>
+</div>
+<section class="mt-12">
+<div class="flex justify-between items-center px-0 pb-4 pt-5">
+<h2 class="text-gray-900 dark:text-gray-100 text-2xl font-bold leading-tight tracking-tight">Parcourir par catégorie</h2>
+<a class="text-sm font-medium text-primary hover:underline" href="#">Voir tout</a>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 sm:gap-6">
+<a class="flex flex-col items-center gap-3 p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-lg transition-shadow border border-gray-200 dark:border-gray-700/50 text-center group" href="#">
+<span class="material-symbols-outlined text-4xl text-primary group-hover:scale-110 transition-transform">phone_iphone</span>
+<p class="text-sm font-semibold text-gray-800 dark:text-gray-100">Électronique</p>
+</a>
+<a class="flex flex-col items-center gap-3 p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-lg transition-shadow border border-gray-200 dark:border-gray-700/50 text-center group" href="#">
+<span class="material-symbols-outlined text-4xl text-primary group-hover:scale-110 transition-transform">checkroom</span>
+<p class="text-sm font-semibold text-gray-800 dark:text-gray-100">Mode</p>
+</a>
+<a class="flex flex-col items-center gap-3 p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-lg transition-shadow border border-gray-200 dark:border-gray-700/50 text-center group" href="#">
+<span class="material-symbols-outlined text-4xl text-primary group-hover:scale-110 transition-transform">chair</span>
+<p class="text-sm font-semibold text-gray-800 dark:text-gray-100">Maison</p>
+</a>
+<a class="flex flex-col items-center gap-3 p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-lg transition-shadow border border-gray-200 dark:border-gray-700/50 text-center group" href="#">
+<span class="material-symbols-outlined text-4xl text-primary group-hover:scale-110 transition-transform">sports_esports</span>
+<p class="text-sm font-semibold text-gray-800 dark:text-gray-100">Gaming</p>
+</a>
+<a class="flex flex-col items-center gap-3 p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-lg transition-shadow border border-gray-200 dark:border-gray-700/50 text-center group" href="#">
+<span class="material-symbols-outlined text-4xl text-primary group-hover:scale-110 transition-transform">auto_stories</span>
+<p class="text-sm font-semibold text-gray-800 dark:text-gray-100">Livres</p>
+</a>
+<a class="flex flex-col items-center gap-3 p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-lg transition-shadow border border-gray-200 dark:border-gray-700/50 text-center group" href="#">
+<span class="material-symbols-outlined text-4xl text-primary group-hover:scale-110 transition-transform">lunch_dining</span>
+<p class="text-sm font-semibold text-gray-800 dark:text-gray-100">Supermarché</p>
+</a>
+</div>
+</section>
+<section class="mt-12">
+<div class="flex justify-between items-center px-0 pb-4 pt-5">
+<h2 class="text-gray-900 dark:text-gray-100 text-2xl font-bold leading-tight tracking-tight">Nouveautés</h2>
+<a class="text-sm font-medium text-primary hover:underline" href="#">Voir tout</a>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+<div class="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow border border-gray-200 dark:border-gray-700/50">
+<img class="w-full h-64 object-cover" data-alt="A sleek, modern pair of sneakers with a white sole" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDmEd4pnkwb9mKgdt6AZYVQwc2f_TvnRFvJi2J-8AHju2wx6oPJViQaSECgg_yCUCpNxyHRCAdI_W1EZfUQvNl-kouxfaE4Oy8SFfT7tQ3M2THmoAUJ1hSDfgIB4_or4DSoBFD3eXKcXxWI25VWbyXdtdhRWY7Mo6QdPa9PXK00PTe3_AlF931G69aR6wFJJ8myYBY_tl4zoMbBcYYGAUksd2bv4OZvnNHH7efhUDBz5JYm3SC5DWyGZDjenrL6x_8qDgQ28iZwEDVp"/>
+<div class="p-4">
+<h3 class="font-semibold text-gray-800 dark:text-gray-100">Baskets Urbaines</h3>
+<p class="text-sm text-gray-500 dark:text-gray-400">Chaussures</p>
+<p class="mt-2 font-bold text-lg text-primary">15 000 DZD</p>
+</div>
+</div>
+<div class="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow border border-gray-200 dark:border-gray-700/50">
+<img class="w-full h-64 object-cover" data-alt="A stylish woman's handbag made of brown leather" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBDrMtUybatRdKS19IgTBtw-d7XMdCzC0UVa0r3LVzZXc8qnIpc3qxog3OX4sL5NobR2MykheE7PAT12iZWL5tnBMjL4WYId82W82BnQ84ep8vOstMK0LUhpIlXdCDMhT46NCMrfxVuZJ2U6oWDYL5xM_ooStHuWC-C1le5A0PJtyoy0TqBWRyyYs1wNXsfccCTEcqP5yr20s6EXt4lH1syOXgaJJ9BZ1wo__zPYRyQoi72e0Bw2jjoYfnNu_MiFUmVz7F-Ggar_hms"/>
+<div class="p-4">
+<h3 class="font-semibold text-gray-800 dark:text-gray-100">Sac à Main en Cuir</h3>
+<p class="text-sm text-gray-500 dark:text-gray-400">Accessoires</p>
+<p class="mt-2 font-bold text-lg text-primary">32 000 DZD</p>
+</div>
+</div>
+<div class="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow border border-gray-200 dark:border-gray-700/50">
+<img class="w-full h-64 object-cover" data-alt="A plain white t-shirt hanging on a rack" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCyePmSAHX-yclqUuVS3m04V3gan3IL-J_0sbqa4snpj7aVS2kiAAARQ1eNdcXrbczHmhU0H4u7mPQ7WUmU3fJUw-g_ioPm61zVoN8dxv20cfworF10kOLv-EA6p2byal5Z0H6Eao-RRyxgMsY4TTNtnG0xynClkwJDH9QDy_U5psMt4AVN9oyu61jl3_6Zu-EStJktMWJ_7Z6g8xVm7zXMvfaatr6nlQpybTijio4hAslrsUq2FhAHYy-icusMrKeSlhDIF64zB8wW"/>
+<div class="p-4">
+<h3 class="font-semibold text-gray-800 dark:text-gray-100">T-Shirt Essentiel</h3>
+<p class="text-sm text-gray-500 dark:text-gray-400">Hommes</p>
+<p class="mt-2 font-bold text-lg text-primary">4 000 DZD</p>
+</div>
+</div>
+<div class="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow border border-gray-200 dark:border-gray-700/50">
+<img class="w-full h-64 object-cover" data-alt="A classic wristwatch with a leather strap against a dark background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA8xoRJTH7yeVe26mxDXV5RFYz2d3oAHKhhMIi8b--UZr0i-NG-ASspCUZPu2T8kKvqefPM7oVx6p8Ci9pjfUpnUGLbGRk1QDi0xSjO28ULZRh_1z0U5eMX7RQUbSUhG1UdRiOvgcl3STAC5aaUSyIXWYfNorCZsOOUvWVZxbhUdEQaXWX1qFVinNpYYvQMx4mcDlk16Aj6JaBfIyekQaFcSQNXZopnU47PUG9SL_45BHrlHRSgXXPQ8FYJwXjPSdqg3Sx_twnUqbkg"/>
+<div class="p-4">
+<h3 class="font-semibold text-gray-800 dark:text-gray-100">Montre Classique</h3>
+<p class="text-sm text-gray-500 dark:text-gray-400">Accessoires</p>
+<p class="mt-2 font-bold text-lg text-primary">25 000 DZD</p>
+</div>
+</div>
+</div>
+</section>
+<section class="mt-12 bg-primary/10 dark:bg-primary/20 p-8 rounded-xl flex flex-col md:flex-row items-center justify-between gap-6">
+<div class="text-center md:text-left">
+<h2 class="text-2xl font-bold leading-tight tracking-tight text-gray-900 dark:text-white">Promotions du moment</h2>
+<p class="mt-2 text-gray-600 dark:text-gray-300">Ne manquez pas nos offres exclusives sur une sélection de produits.</p>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-4 w-full md:w-auto">
+<div class="bg-white dark:bg-gray-800 rounded-lg p-2 flex flex-col items-center text-center">
+<img alt="Écouteurs sans fil" class="w-24 h-24 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBs-fXC9E7dbYuvMRA8mVhvMOHZvKYeTu66G-SHwiHB3yF59Jx5DZPnbn5LCylVHnwN4MAG67LtHeiWNMdqu95_EX4AHONlSX2_dlQYLTWZP3HW7qVv-EqI7sIdMla2NDQjgEhC0nMyXpY3sl6rAs-Yj_6VoH_NPi64y2mWUYymN88_hGPF5Ufxx8UdJumMuNa3b9HFLxvUSPZv92xZVZRPGhMoWrrl3HeLMgjjFRMZgzhWBtPTSKBnKV5jhzpoI48irR1_EFdcXC2E"/>
+<p class="text-sm font-semibold mt-2 text-gray-800 dark:text-gray-100">Écouteurs</p>
+<p class="text-xs text-red-500 font-bold">-25%</p>
+</div>
+<div class="bg-white dark:bg-gray-800 rounded-lg p-2 flex flex-col items-center text-center">
+<img alt="Machine à café" class="w-24 h-24 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDGipYTRIDH2TxgYqG5b-JCux86ELykMilciSA5C_thI7LJyT_1tNyk8GSmCvz-FhgSJzTXqewN9gr5SyXEILyIyhyYc1MNwMoZ2rUbJ8c9lfQC5OdPlh9NWuxgNq14QTwqiUOMbEICHcIoH8G0nwwBwr33TxmUtMsaij1mArT1QiPLSfRBBVU_ArpGdCJd7PsEnnxmrzFrQLl-q64UdRkTdCZfBOt2iSXg9TmzMpBXZaeWSovam1ecyFJq-yJgaVvYzU8T_c_45EDz"/>
+<p class="text-sm font-semibold mt-2 text-gray-800 dark:text-gray-100">Machine à café</p>
+<p class="text-xs text-red-500 font-bold">-15%</p>
+</div>
+<div class="bg-white dark:bg-gray-800 rounded-lg p-2 flex flex-col items-center text-center">
+<img alt="Smartphone" class="w-24 h-24 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCRRUAdvU47fIspdvse_RsFhf_0y3PU03eil1AVq1nzUQq7wLrTKILZip0_KT6Z41-yQql720IQneg8P7Tt2GQcd_qfN9k7MOe-jAvtrYxPcDPC6KBBHqGbnzX3oZ9XyIG97fQWj0-GmTsuNG5_BsBR1vrTcc8v2x7e-CzhcSSchY3PuBLmViLr82KPy-fwR5gOEvPfIIrWO1bl9eCJ-6g6Mn2wgt6UeJ8NuEdAXfYxsc6ywsTDA50s5YFcvA3Yy7yCrXaBxjsX-uig"/>
+<p class="text-sm font-semibold mt-2 text-gray-800 dark:text-gray-100">Smartphone</p>
+<p class="text-xs text-red-500 font-bold">-10%</p>
+</div>
+<div class="bg-white dark:bg-gray-800 rounded-lg p-2 flex flex-col items-center text-center">
+<img alt="Livre" class="w-24 h-24 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBsKYVwQLKt5ZDbwKiIBfRcHK9AceHOYCuG1GI0aCA8bwBQKtT_hSSA62iVIY_xrKr3qAYN8PgdQFYhOapA0SSkRixiNbMhnPtcDKalEFxTuX5yjbqsQbjpDo6TOlvSZWEIUekH_rT2UNDwNWQGF9giSRoV4ksYjmBuO7FB1uk5KKxgCCZihDfTuiQHMriN9Y8WOfva-wgmlH9fSItMiDHl8LDgiAdt4Y-HJstpgApM8u7HOnOInjFlhLsGimINvmmHhsJEHbX3CkoQ"/>
+<p class="text-sm font-semibold mt-2 text-gray-800 dark:text-gray-100">Livre de cuisine</p>
+<p class="text-xs text-red-500 font-bold">-30%</p>
+</div>
+</div>
+</section>
+<section class="mt-12 bg-gray-100 dark:bg-gray-800/50 py-10 rounded-xl">
+<div class="mx-auto max-w-7xl px-6 lg:px-8">
+<h2 class="text-center text-2xl font-bold leading-tight tracking-tight text-gray-900 dark:text-gray-100">Paiement Facile et Sécurisé</h2>
+<p class="text-center mt-2 text-gray-600 dark:text-gray-400">Nous acceptons les méthodes de paiement locales les plus populaires.</p>
+<div class="mt-8 flex justify-center items-center gap-6 sm:gap-10">
+<div class="flex flex-col items-center gap-2">
+<img alt="Carte CIB" class="h-10 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDYBYPB2CnOcbcSslRB6tDKCQFB01mYj5bm_l93OgxhYRBcTB_dURXJu0BtQua_T8akLQEkDFQizdcZ16yvmLUKmviibpAf9WcFJKaCkZDebbMv_w0LFmSvw1TQx2EBtfvnaX8a0WvbJb1m-6rYR_SI8hMeKwJrzZBAtpivRIe45aNAhTXPq4Bdqv5oodQpFYu3QSr-00kmIeiwGhiqPtpr4jdjef044Chpbn_ssym3qMVz0vXLkLMCW-SxVoKQ1qt7SgFHgfvfouz1"/>
+<span class="text-sm font-medium text-gray-700 dark:text-gray-300">Carte CIB</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+<img alt="Algérie Poste" class="h-10 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBDZqP0MaLS-oYvu0iW_ipvlS9QWPKuIf92HNMHsclZLP2YFiConj9lw2XGtrJoD1WWrF41IRlplWbZTtDz9QpGn2HoLCYM6eiKmdW92Q0NSuUBYq3zQidDZsCq96mfKj_S5JbyBxxkWb1PDC_G8wo9p2l5d_qzcWm-vhHtK8Om2hc4HGCtMqzenq-HwIrAD_o84vstuP2z-wM55akQd63VmVjh1DVr6yLBky9LJb64nS8MtDh3XhQV3Tz-0fKiBg_RplNHDyvzqHQt"/>
+<span class="text-sm font-medium text-gray-700 dark:text-gray-300">BaridiMob</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+<span class="material-symbols-outlined text-4xl text-primary">local_shipping</span>
+<span class="text-sm font-medium text-gray-700 dark:text-gray-300">Paiement à la livraison</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<footer class="bg-white dark:bg-gray-900/50 border-t border-gray-200 dark:border-gray-800 mt-12">
+<div class="mx-auto max-w-7xl px-6 py-12 lg:px-8">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+<div>
+<h3 class="text-sm font-semibold leading-6 text-gray-900 dark:text-white">Service Client</h3>
+<ul class="mt-6 space-y-4" role="list">
+<li><a class="text-sm leading-6 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white" href="#">FAQ</a></li>
+<li><a class="text-sm leading-6 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white" href="#">Contactez-nous</a></li>
+<li><a class="text-sm leading-6 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white" href="#">Livraison &amp; Retours</a></li>
+</ul>
+</div>
+<div>
+<h3 class="text-sm font-semibold leading-6 text-gray-900 dark:text-white">À Propos</h3>
+<ul class="mt-6 space-y-4" role="list">
+<li><a class="text-sm leading-6 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white" href="#">Notre Histoire</a></li>
+<li><a class="text-sm leading-6 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white" href="#">Carrières</a></li>
+<li><a class="text-sm leading-6 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white" href="#">Presse</a></li>
+</ul>
+</div>
+<div class="col-span-2 md:col-span-2">
+<h3 class="text-sm font-semibold leading-6 text-gray-900 dark:text-white">Rejoignez notre newsletter</h3>
+<p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Les dernières nouveautés, articles et ressources, envoyés chaque semaine dans votre boîte de réception.</p>
+<form class="mt-6 sm:flex sm:max-w-md">
+<input autocomplete="email" class="w-full min-w-0 appearance-none rounded-md border-0 bg-white dark:bg-gray-800 px-3 py-2 text-base text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:w-64 sm:text-sm sm:leading-6" id="email-address" name="email-address" placeholder="Entrez votre email" required="" type="email"/>
+<div class="mt-4 sm:ml-4 sm:mt-0 sm:flex-shrink-0">
+<button class="flex w-full items-center justify-center rounded-md bg-primary px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" type="submit">S'inscrire</button>
+</div>
+</form>
+</div>
+</div>
+<div class="mt-12 border-t border-gray-900/10 dark:border-gray-200/10 pt-8">
+<p class="text-xs leading-5 text-gray-500 dark:text-gray-400">© 2024 Thanout Algérie, Inc. Tous droits réservés.</p>
+</div>
+</div>
+</footer>
+</div>
+</div>
+</div>
+</div>
+</body></html>

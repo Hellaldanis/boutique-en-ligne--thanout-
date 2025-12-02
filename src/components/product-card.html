@@ -1,0 +1,48 @@
+<!-- Product Card Component -->
+<article class="product-card">
+  <!-- Image du produit -->
+  <div class="product-card__image-wrapper">
+    <img 
+      src="https://via.placeholder.com/300x400" 
+      alt="Nom du produit"
+      class="product-card__image"
+    />
+    
+    <!-- Badge de réduction (optionnel) -->
+    <span class="product-card__badge">-25%</span>
+    
+    <!-- Bouton favori -->
+    <button class="product-card__favorite" aria-label="Ajouter aux favoris">
+      <span class="material-symbols-outlined">favorite</span>
+    </button>
+  </div>
+
+  <!-- Contenu de la carte -->
+  <div class="product-card__content">
+    <h3 class="product-card__title">Nom du Produit</h3>
+    <p class="product-card__category">Catégorie</p>
+    
+    <!-- Prix -->
+    <div class="product-card__pricing">
+      <span class="product-card__price">15 000 DA</span>
+      <span class="product-card__price--old">20 000 DA</span>
+    </div>
+    
+    <!-- Évaluation -->
+    <div class="product-card__rating">
+      <div class="product-card__stars">
+        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">star</span>
+        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">star</span>
+        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">star</span>
+        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">star</span>
+        <span class="material-symbols-outlined">star_half</span>
+      </div>
+      <span class="product-card__rating-count">(125)</span>
+    </div>
+    
+    <!-- Bouton d'action -->
+    <button class="product-card__action">
+      Ajouter au panier
+    </button>
+  </div>
+</article>

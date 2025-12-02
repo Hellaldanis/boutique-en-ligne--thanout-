@@ -1,0 +1,180 @@
+/**
+ * Composant Product Card - Carte produit
+ */
+
+.product-card {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--surface);
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  transition: all var(--transition-base);
+  cursor: pointer;
+}
+
+.product-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-4px);
+}
+
+/* Image du produit */
+.product-card__image-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3/4;
+  overflow: hidden;
+  background-color: var(--background);
+}
+
+.product-card__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-slow);
+}
+
+.product-card:hover .product-card__image {
+  transform: scale(1.05);
+}
+
+/* Badge de réduction */
+.product-card__badge {
+  position: absolute;
+  top: var(--spacing-3);
+  right: var(--spacing-3);
+  padding: var(--spacing-1) var(--spacing-2);
+  background-color: var(--error);
+  color: white;
+  font-size: var(--text-xs);
+  font-weight: var(--font-bold);
+  border-radius: var(--border-radius);
+}
+
+/* Bouton favori */
+.product-card__favorite {
+  position: absolute;
+  top: var(--spacing-3);
+  left: var(--spacing-3);
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: var(--border-radius-full);
+  color: var(--text-secondary);
+  transition: all var(--transition-fast);
+  opacity: 0;
+}
+
+.product-card:hover .product-card__favorite {
+  opacity: 1;
+}
+
+.product-card__favorite:hover {
+  color: var(--error);
+  transform: scale(1.1);
+}
+
+.product-card__favorite.active {
+  color: var(--error);
+}
+
+/* Contenu de la carte */
+.product-card__content {
+  padding: var(--spacing-4);
+}
+
+.product-card__title {
+  font-size: var(--text-base);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-1);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.product-card__category {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-2);
+}
+
+/* Prix */
+.product-card__pricing {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  margin-bottom: var(--spacing-3);
+}
+
+.product-card__price {
+  font-size: var(--text-lg);
+  font-weight: var(--font-bold);
+  color: var(--primary);
+}
+
+.product-card__price--old {
+  font-size: var(--text-sm);
+  font-weight: var(--font-normal);
+  color: var(--text-secondary);
+  text-decoration: line-through;
+}
+
+/* Évaluation */
+.product-card__rating {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  margin-bottom: var(--spacing-3);
+}
+
+.product-card__stars {
+  display: flex;
+  gap: 2px;
+  color: var(--accent);
+}
+
+.product-card__rating-count {
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+}
+
+/* Bouton d'action */
+.product-card__action {
+  width: 100%;
+  padding: var(--spacing-2);
+  background-color: var(--primary);
+  color: white;
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  border-radius: var(--border-radius);
+  transition: all var(--transition-fast);
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.product-card:hover .product-card__action {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.product-card__action:hover {
+  background-color: var(--primary-hover);
+}
+
+/* Variante grid compacte */
+.product-card--compact .product-card__content {
+  padding: var(--spacing-3);
+}
+
+.product-card--compact .product-card__title {
+  font-size: var(--text-sm);
+}
+
+.product-card--compact .product-card__price {
+  font-size: var(--text-base);
+}

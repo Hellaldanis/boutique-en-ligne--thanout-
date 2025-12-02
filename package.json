@@ -1,0 +1,21 @@
+{
+  "name": "thanout-ecommerce",
+  "version": "1.0.0",
+  "description": "Boutique en ligne Thanout - Algérie",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "keywords": [
+    "ecommerce",
+    "algeria",
+    "shopping"
+  ],
+  "author": "Thanout",
+  "license": "MIT",
+  "devDependencies": {
+    "vite": "^5.0.0"
+  }
+}

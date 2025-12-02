@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html class="light" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Confirmation de Commande - Thanout</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2563eb",
+                        "secondary": "#10b981",
+                        "background-light": "#f8fafc",
+                        "background-dark": "#0b1120",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark">
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<div class="flex flex-1 justify-center py-5">
+<div class="layout-content-container flex flex-col w-full max-w-4xl flex-1 px-4 sm:px-6 lg:px-8">
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-gray-200 dark:border-gray-700 py-4">
+<div class="flex items-center gap-3 text-gray-900 dark:text-white">
+<div class="size-8 text-primary">
+<svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M6 36L16.2353 22.5L24 32.5L34.2353 18.5L42 36H6Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"></path>
+<path d="M30 14C32.2091 14 34 12.2091 34 10C34 7.79086 32.2091 6 30 6C27.7909 6 26 7.79086 26 10C26 12.2091 27.7909 14 30 14Z" fill="currentColor"></path>
+</svg>
+</div>
+<h2 class="text-2xl font-bold tracking-tight">Thanout</h2>
+</div>
+<div class="hidden md:flex flex-1 justify-end items-center gap-8">
+<div class="flex items-center gap-6">
+<a class="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary" href="#">Boutique</a>
+<a class="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary" href="#">Mon Compte</a>
+</div>
+<div class="flex items-center gap-2">
+<button class="flex h-10 w-10 cursor-pointer items-center justify-center overflow-hidden rounded-full bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700">
+<span class="material-symbols-outlined text-xl">person</span>
+</button>
+<button class="flex h-10 w-10 cursor-pointer items-center justify-center overflow-hidden rounded-full bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700">
+<span class="material-symbols-outlined text-xl">shopping_cart</span>
+</button>
+</div>
+</div>
+</header>
+<main class="flex flex-col gap-8 py-10">
+<div class="flex flex-col items-center text-center gap-4 p-4">
+<div class="flex items-center justify-center size-16 rounded-full bg-secondary/10">
+<span class="material-symbols-outlined text-4xl text-secondary">check_circle</span>
+</div>
+<div class="flex flex-col gap-3">
+<p class="text-3xl md:text-4xl font-black tracking-[-0.033em] text-gray-900 dark:text-white">Merci, votre commande est confirmée !</p>
+<p class="text-base font-normal text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">Votre commande <span class="font-semibold text-gray-800 dark:text-gray-200">#12345-67890</span> est validée. Vous trouverez ci-dessous le récapitulatif et les informations de suivi. Un agent vous contactera bientôt par téléphone pour confirmer les détails avant l'expédition.</p>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<div class="lg:col-span-2 flex flex-col gap-8">
+<div class="bg-white dark:bg-background-dark border border-gray-200 dark:border-gray-800 rounded-xl">
+<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-800">
+<h2 class="text-lg font-bold text-gray-900 dark:text-white">Articles de votre commande</h2>
+</div>
+<div class="p-6 flex flex-col gap-6">
+<div class="flex items-start gap-4">
+<img class="w-20 h-20 object-cover rounded-lg border border-gray-200 dark:border-gray-800 shrink-0" data-alt="Minimalist wireless headphones in white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAX23Iw_opanbmFDS-TEYkTeIlYosD3mLRkO2Z6E3lB_L5GS7r_05zd8C8bnT0F0Zap2OcEfbJ7T-Z4i4RBuk34Hz_UpOEw042bdKlUpUSTK_7U2xtXYMtxTEKEt3Lm5yR7E7kVQSI8dA0w8xgHhn8AJ7HfdsEeKTo_dqKwOIc-mUIDKcXamEPWXsuxPSB-siV_-QE9VtTbAKfUoKtAOZEXr3s1vlcxk4TCmhv5KFH6MoFlxOK-Jm7v8cGvtTOTDDqNhh_S-C4hmiaL"/>
+<div class="flex-grow">
+<p class="font-semibold text-gray-800 dark:text-gray-200">Casque audio sans fil Djurdjura</p>
+<p class="text-sm text-gray-500 dark:text-gray-400">Vendu par : Thanout</p>
+<div class="mt-2 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+<span class="material-symbols-outlined text-base text-secondary">local_shipping</span>
+<span>Livraison prévue : 25 - 27 Juillet</span>
+</div>
+</div>
+<div class="text-right">
+<p class="font-semibold text-gray-900 dark:text-white">24 990 DA</p>
+<p class="text-sm text-gray-500 dark:text-gray-400">Qté: 1</p>
+</div>
+</div>
+<div class="border-t border-gray-200 dark:border-gray-800"></div>
+<div class="flex items-start gap-4">
+<img class="w-20 h-20 object-cover rounded-lg border border-gray-200 dark:border-gray-800 shrink-0" data-alt="Sleek black smartwatch with a digital face" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAz54wuE7i1BYRe2hzir_1UGu7TdAD55wHDDWSpbfHreya2usbZXJE7yppk-qjl4hu4EdH4_PCNdozKcsbOh7-lyOg8vzWi3DAF5CMD6HlqGXGT6BYLHwEWNfduPARk-FatHq-uu2JoA3MyMWLxmEQWbTgIIOS-5_F2fK8Hky07ZXBE5csF0zn_yUkmqeZuuxFpZNQM1Fs-hKjeLOnLU2Yebcpl9lgmGYj5s2V9gct5mjoXL9Dso03YlVv8wuwDiSbE1Xnkd-Mc9Hce"/>
+<div class="flex-grow">
+<p class="font-semibold text-gray-800 dark:text-gray-200">Montre Connectée Tizi Pro</p>
+<p class="text-sm text-gray-500 dark:text-gray-400">Vendu par : HighTech DZ</p>
+<div class="mt-2 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+<span class="material-symbols-outlined text-base text-yellow-600 dark:text-yellow-400">pending</span>
+<span>En attente de confirmation</span>
+</div>
+</div>
+<div class="text-right">
+<p class="font-semibold text-gray-900 dark:text-white">49 990 DA</p>
+<p class="text-sm text-gray-500 dark:text-gray-400">Qté: 1</p>
+</div>
+</div>
+</div>
+<div class="px-6 py-4 border-t border-gray-200 dark:border-gray-800 space-y-2">
+<div class="flex justify-between text-sm text-gray-600 dark:text-gray-400">
+<span>Sous-total</span>
+<span>74 980 DA</span>
+</div>
+<div class="flex justify-between text-sm text-gray-600 dark:text-gray-400">
+<span>Livraison</span>
+<span>600 DA</span>
+</div>
+<div class="flex justify-between font-bold text-base text-gray-900 dark:text-white">
+<span>Total</span>
+<span>75 580 DA</span>
+</div>
+</div>
+</div>
+<div class="bg-white dark:bg-background-dark border border-gray-200 dark:border-gray-800 rounded-xl p-6">
+<h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Statut global de la commande</h2>
+<div class="flex items-center gap-4">
+<div class="flex-1 h-2 bg-gray-200 dark:bg-gray-700 rounded-full">
+<div class="h-2 bg-primary rounded-full" style="width: 33%"></div>
+</div>
+</div>
+<div class="mt-4 grid grid-cols-3 text-center text-sm">
+<div class="font-semibold text-primary">Confirmée</div>
+<div class="font-medium text-gray-500 dark:text-gray-400">Expédiée</div>
+<div class="font-medium text-gray-500 dark:text-gray-400">Livrée</div>
+</div>
+</div>
+</div>
+<div class="lg:col-span-1 flex flex-col gap-8">
+<div class="bg-white dark:bg-background-dark border border-gray-200 dark:border-gray-800 rounded-xl p-6">
+<h3 class="text-base font-bold text-gray-900 dark:text-white mb-3">Adresse de livraison</h3>
+<address class="not-italic text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                                        Karim Mahmoudi<br/>
+                                        Cité 1200 Logements, Bâtiment A, N°15<br/>
+                                        16000, Alger<br/>
+                                        Algérie
+                                    </address>
+</div>
+<div class="bg-white dark:bg-background-dark border border-gray-200 dark:border-gray-800 rounded-xl p-6">
+<h3 class="text-base font-bold text-gray-900 dark:text-white mb-3">Méthode de paiement</h3>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-2xl text-gray-600 dark:text-gray-400">payments</span>
+<p class="text-sm text-gray-600 dark:text-gray-400">Paiement à la livraison</p>
+</div>
+</div>
+<div class="flex flex-col gap-3">
+<button class="flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg h-11 bg-primary text-white gap-2 px-5 text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primary/90">
+<span class="material-symbols-outlined text-lg">support_agent</span>
+<span>Contacter le support</span>
+</button>
+<button class="flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg h-11 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 gap-2 px-5 text-sm font-bold leading-normal tracking-[0.015em] hover:bg-gray-200 dark:hover:bg-gray-700">Continuer mes achats</button>
+</div>
+</div>
+</div>
+</main>
+<footer class="py-8 mt-10 border-t border-gray-200 dark:border-gray-800">
+<div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+<p class="text-sm text-gray-500 dark:text-gray-400">© 2024 Thanout. Tous droits réservés.</p>
+<div class="flex gap-6">
+<a class="text-sm text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary" href="#">FAQ</a>
+<a class="text-sm text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary" href="#">Contact</a>
+<a class="text-sm text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary" href="#">Politique de retour</a>
+</div>
+</div>
+</footer>
+</div>
+</div>
+</div>
+</div>
+</body></html>
