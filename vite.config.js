@@ -9,6 +9,7 @@ const __dirname = dirname(__filename);
 
 export default defineConfig({
   plugins: [react()],
+  base: '/boutique-en-ligne--thanout-/',
   root: './',
   publicDir: './public',
   build: {
