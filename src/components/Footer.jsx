@@ -19,17 +19,17 @@ function Footer() {
           <div>
             <h3 className="text-sm font-semibold leading-6 text-gray-900 dark:text-white">Service Client</h3>
             <ul className="mt-6 space-y-4" role="list">
-              <li><button onClick={() => alert('FAQ - Fonctionnalité à venir')} className="text-sm leading-6 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white text-left">FAQ</button></li>
-              <li><button onClick={() => alert('Contact - Fonctionnalité à venir')} className="text-sm leading-6 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white text-left">Contactez-nous</button></li>
-              <li><button onClick={() => alert('Livraison & Retours - Fonctionnalité à venir')} className="text-sm leading-6 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white text-left">Livraison & Retours</button></li>
+              <li><Link to="/" className="text-sm leading-6 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white text-left">FAQ</Link></li>
+              <li><Link to="/" className="text-sm leading-6 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white text-left">Contactez-nous</Link></li>
+              <li><Link to="/" className="text-sm leading-6 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white text-left">Livraison & Retours</Link></li>
             </ul>
           </div>
           <div>
             <h3 className="text-sm font-semibold leading-6 text-gray-900 dark:text-white">À Propos</h3>
             <ul className="mt-6 space-y-4" role="list">
-              <li><button onClick={() => alert('Notre Histoire - Fonctionnalité à venir')} className="text-sm leading-6 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white text-left">Notre Histoire</button></li>
-              <li><button onClick={() => alert('Carrières - Fonctionnalité à venir')} className="text-sm leading-6 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white text-left">Carrières</button></li>
-              <li><button onClick={() => alert('Presse - Fonctionnalité à venir')} className="text-sm leading-6 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white text-left">Presse</button></li>
+              <li><Link to="/" className="text-sm leading-6 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white text-left">Notre Histoire</Link></li>
+              <li><Link to="/" className="text-sm leading-6 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white text-left">Carrières</Link></li>
+              <li><Link to="/" className="text-sm leading-6 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white text-left">Presse</Link></li>
             </ul>
           </div>
           <div className="col-span-2 md:col-span-2">

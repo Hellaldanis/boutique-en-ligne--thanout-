@@ -1,14 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useCartStore, useFavoritesStore, useCompareStore } from '../store';
+import { useCartStore, useFavoritesStore } from '../store';
 
 function ProductCard({ product }) {
   const addItem = useCartStore(state => state.addItem);
   const { toggleFavorite, isFavorite } = useFavoritesStore();
-  const { addToCompare, isInCompare } = useCompareStore();
   const [showAddedNotification, setShowAddedNotification] = React.useState(false);
-  const [compareMessage, setCompareMessage] = React.useState('');
 
   const handleAddToCart = () => {
     addItem(product);
@@ -16,14 +14,7 @@ function ProductCard({ product }) {
     setTimeout(() => setShowAddedNotification(false), 2000);
   };
 
-  const handleCompare = () => {
-    const result = addToCompare(product);
-    setCompareMessage(result.message);
-    setTimeout(() => setCompareMessage(''), 2000);
-  };
-
   const productIsFavorite = isFavorite(product.id);
-  const productIsInCompare = isInCompare(product.id);
 
   return (
     <Link to={`/product/${product.id}`}>
@@ -44,20 +35,6 @@ function ProductCard({ product }) {
             className="absolute top-4 left-1/2 -translate-x-1/2 bg-green-500 text-white px-4 py-2 rounded-full text-sm font-medium z-10 shadow-lg"
           >
             ✓ Ajouté au panier
-          </motion.div>
-        )}
-        {compareMessage && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className={`absolute top-4 left-1/2 -translate-x-1/2 ${
-              compareMessage.includes('maximum') || compareMessage.includes('déjà') 
-                ? 'bg-red-500' 
-                : 'bg-blue-500'
-            } text-white px-4 py-2 rounded-full text-sm font-medium z-10 shadow-lg whitespace-nowrap`}
-          >
-            {compareMessage}
           </motion.div>
         )}
       </AnimatePresence>
@@ -89,6 +66,7 @@ function ProductCard({ product }) {
         <div className="absolute top-2 right-2 flex flex-col gap-2">
           <motion.button 
             onClick={(e) => {
+              e.preventDefault();
               e.stopPropagation();
               toggleFavorite(product);
             }}
@@ -108,23 +86,6 @@ function ProductCard({ product }) {
             >
               favorite
             </motion.span>
-          </motion.button>
-
-          <motion.button 
-            onClick={(e) => {
-              e.stopPropagation();
-              handleCompare();
-            }}
-            className={`w-10 h-10 backdrop-blur-sm rounded-full flex items-center justify-center transition-all ${
-              productIsInCompare 
-                ? 'bg-blue-500 text-white' 
-                : 'bg-white/80 dark:bg-gray-800/80 hover:bg-white dark:hover:bg-gray-800'
-            }`}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            title="Comparer"
-          >
-            <span className="material-symbols-outlined">compare</span>
           </motion.button>
         </div>
 
@@ -180,7 +141,11 @@ function ProductCard({ product }) {
 
         {/* Bouton panier */}
         <motion.button
-          onClick={handleAddToCart}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleAddToCart();
+          }}
           className="mt-3 w-full bg-gradient-to-r from-primary to-blue-600 text-white py-2.5 rounded-lg font-medium flex items-center justify-center gap-2 overflow-hidden relative group/btn"
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}

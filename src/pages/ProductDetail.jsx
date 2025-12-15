@@ -4,178 +4,42 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { useCartStore, useFavoritesStore, useCompareStore } from '../store';
-
-// Données de produits (normalement viendraient d'une API)
-const allProducts = [
-  {
-    id: 1,
-    name: 'Baskets Urbaines Premium',
-    category: 'Chaussures',
-    price: 15000,
-    oldPrice: 20000,
-    discount: 25,
-    image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&h=800&fit=crop',
-    images: [
-      'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&h=800&fit=crop',
-      'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=800&h=800&fit=crop',
-      'https://images.unsplash.com/photo-1460353581641-37baddab0fa2?w=800&h=800&fit=crop'
-    ],
-    rating: 4.5,
-    reviews: 128,
-    description: 'Des baskets urbaines premium conçues pour le confort et le style. Idéales pour un usage quotidien avec une semelle amortissante et un design moderne.',
-    features: ['Semelle amortissante', 'Respirant', 'Léger', 'Design moderne'],
-    sizes: ['39', '40', '41', '42', '43', '44'],
-    colors: ['Noir', 'Blanc', 'Gris', 'Bleu'],
-    stock: 45,
-    brand: 'UrbanStyle'
-  },
-  {
-    id: 2,
-    name: 'Sac à Main en Cuir Véritable',
-    category: 'Accessoires',
-    price: 32000,
-    image: 'https://images.unsplash.com/photo-1590874103328-eac38a683ce7?w=800&h=800&fit=crop',
-    images: [
-      'https://images.unsplash.com/photo-1590874103328-eac38a683ce7?w=800&h=800&fit=crop',
-      'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=800&h=800&fit=crop'
-    ],
-    rating: 5,
-    reviews: 89,
-    description: 'Sac à main élégant en cuir véritable, parfait pour toutes les occasions. Spacieux avec plusieurs compartiments pour organiser vos affaires.',
-    features: ['Cuir véritable', 'Multiple compartiments', 'Fermeture éclair sécurisée', 'Bandoulière ajustable'],
-    colors: ['Marron', 'Noir', 'Beige'],
-    stock: 23,
-    brand: 'LuxeLeather'
-  },
-  {
-    id: 3,
-    name: 'T-Shirt Essentiel Cotton Bio',
-    category: 'Mode',
-    price: 4000,
-    image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&h=800&fit=crop',
-    images: [
-      'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&h=800&fit=crop',
-      'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=800&h=800&fit=crop'
-    ],
-    rating: 4,
-    reviews: 203,
-    description: 'T-shirt basique en coton bio de haute qualité. Doux au toucher et respectueux de l\'environnement.',
-    features: ['100% Coton Bio', 'Coupe régulière', 'Col rond', 'Durable'],
-    sizes: ['S', 'M', 'L', 'XL', 'XXL'],
-    colors: ['Noir', 'Blanc', 'Gris', 'Bleu Marine'],
-    stock: 150,
-    brand: 'EcoWear'
-  },
-  {
-    id: 4,
-    name: 'Montre Classique Automatique',
-    category: 'Accessoires',
-    price: 25000,
-    image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&h=800&fit=crop',
-    images: [
-      'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&h=800&fit=crop',
-      'https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=800&h=800&fit=crop'
-    ],
-    rating: 4.5,
-    reviews: 156,
-    description: 'Montre automatique au design intemporel. Mécanisme de précision et bracelet en cuir véritable.',
-    features: ['Mouvement automatique', 'Verre saphir', 'Étanche 50m', 'Bracelet cuir'],
-    colors: ['Argent/Noir', 'Or/Marron'],
-    stock: 15,
-    brand: 'TimeMaster'
-  },
-  {
-    id: 5,
-    name: 'Écouteurs Sans Fil Pro',
-    category: 'Électronique',
-    price: 18000,
-    oldPrice: 24000,
-    discount: 25,
-    image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&h=800&fit=crop',
-    images: [
-      'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&h=800&fit=crop',
-      'https://images.unsplash.com/photo-1583394838336-acd977736f90?w=800&h=800&fit=crop'
-    ],
-    rating: 4.8,
-    reviews: 312,
-    description: 'Expérience audio immersive avec réduction de bruit active. Autonomie longue durée et confort exceptionnel.',
-    features: ['Réduction de bruit active', 'Bluetooth 5.2', 'Autonomie 24h', 'Microphone HD'],
-    colors: ['Noir', 'Blanc', 'Argent'],
-    stock: 80,
-    brand: 'AudioTech'
-  },
-  {
-    id: 6,
-    name: 'Veste en Jean Délavé',
-    category: 'Mode',
-    price: 8500,
-    image: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800&h=800&fit=crop',
-    images: [
-      'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800&h=800&fit=crop',
-      'https://images.unsplash.com/photo-1542272617-08f086302542?w=800&h=800&fit=crop'
-    ],
-    rating: 4.3,
-    reviews: 95,
-    description: 'Veste en jean style vintage avec effet délavé. Un classique indémodable pour votre garde-robe.',
-    features: ['Denim robuste', 'Coupe ajustée', '4 poches', 'Boutons métalliques'],
-    sizes: ['S', 'M', 'L', 'XL'],
-    colors: ['Bleu Délavé', 'Noir', 'Gris'],
-    stock: 40,
-    brand: 'DenimCo'
-  },
-  {
-    id: 7,
-    name: 'Smartphone Pro Max',
-    category: 'Électronique',
-    price: 85000,
-    image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&h=800&fit=crop',
-    images: [
-      'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&h=800&fit=crop',
-      'https://images.unsplash.com/photo-1598327105666-5b89351aff23?w=800&h=800&fit=crop'
-    ],
-    rating: 4.9,
-    reviews: 421,
-    description: 'Le dernier cri de la technologie mobile. Écran ultra-fluide, appareil photo professionnel et performances inégalées.',
-    features: ['Écran OLED 120Hz', 'Processeur dernière génération', 'Triple capteur photo', '5G'],
-    colors: ['Graphite', 'Argent', 'Or', 'Bleu Pacifique'],
-    stock: 10,
-    brand: 'TechGiant'
-  },
-  {
-    id: 8,
-    name: 'Lunettes de Soleil Polarisées',
-    category: 'Accessoires',
-    price: 6500,
-    oldPrice: 9000,
-    discount: 28,
-    image: 'https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=800&h=800&fit=crop',
-    images: [
-      'https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=800&h=800&fit=crop',
-      'https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=800&h=800&fit=crop'
-    ],
-    rating: 4.6,
-    reviews: 178,
-    description: 'Protection optimale et style affirmé. Verres polarisés pour une vision claire sans reflets.',
-    features: ['Verres polarisés UV400', 'Monture légère', 'Anti-rayures', 'Étui inclus'],
-    colors: ['Noir', 'Écaille', 'Doré'],
-    stock: 60,
-    brand: 'SunStyle'
-  }
-];
+import { products } from '../data/products';
 
 function ProductDetail() {
   const { id } = useParams();
-  const product = allProducts.find(p => p.id === parseInt(id)) || allProducts[0];
+  const product = products.find(p => p.id === parseInt(id));
   
   const [selectedImage, setSelectedImage] = useState(0);
-  const [selectedSize, setSelectedSize] = useState(product.sizes?.[0] || null);
-  const [selectedColor, setSelectedColor] = useState(product.colors?.[0] || null);
+  const [selectedSize, setSelectedSize] = useState(product?.sizes?.[0] || null);
+  const [selectedColor, setSelectedColor] = useState(product?.colors?.[0] || null);
   const [quantity, setQuantity] = useState(1);
   const [showNotification, setShowNotification] = useState('');
 
   const { addItem } = useCartStore();
   const { toggleFavorite, isFavorite } = useFavoritesStore();
   const { addToCompare } = useCompareStore();
+
+  if (!product) {
+    return (
+      <>
+        <Header />
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold mb-4">Produit non trouvé</h2>
+            <Link to="/" className="text-primary hover:underline">Retour à l'accueil</Link>
+          </div>
+        </div>
+        <Footer />
+      </>
+    );
+  }
+
+  // Ensure arrays exist to prevent errors if data is missing
+  const images = product.images || [product.image];
+  const sizes = product.sizes || [];
+  const colors = product.colors || [];
+  const features = product.features || [];
 
   const handleAddToCart = () => {
     addItem({ ...product, selectedSize, selectedColor, quantity });
@@ -234,7 +98,7 @@ function ProductDetail() {
               layoutId={`product-${product.id}`}
             >
               <img
-                src={product.images?.[selectedImage] || product.image}
+                src={images[selectedImage] || product.image}
                 alt={product.name}
                 className="w-full h-full object-cover"
               />
@@ -246,9 +110,9 @@ function ProductDetail() {
             </motion.div>
 
             {/* Thumbnails */}
-            {product.images && product.images.length > 1 && (
+            {images.length > 1 && (
               <div className="flex gap-4">
-                {product.images.map((img, index) => (
+                {images.map((img, index) => (
                   <button
                     key={index}
                     onClick={() => setSelectedImage(index)}
@@ -308,11 +172,11 @@ function ProductDetail() {
             </p>
 
             {/* Features */}
-            {product.features && (
+            {features.length > 0 && (
               <div>
                 <h3 className="font-semibold mb-3">Caractéristiques :</h3>
                 <ul className="space-y-2">
-                  {product.features.map((feature, index) => (
+                  {features.map((feature, index) => (
                     <li key={index} className="flex items-center gap-2">
                       <span className="material-symbols-outlined text-primary text-sm">check_circle</span>
                       <span className="text-gray-600 dark:text-gray-400">{feature}</span>
@@ -323,11 +187,11 @@ function ProductDetail() {
             )}
 
             {/* Size Selection */}
-            {product.sizes && (
+            {sizes.length > 0 && (
               <div>
                 <h3 className="font-semibold mb-3">Taille :</h3>
                 <div className="flex flex-wrap gap-2">
-                  {product.sizes.map(size => (
+                  {sizes.map(size => (
                     <button
                       key={size}
                       onClick={() => setSelectedSize(size)}
@@ -345,11 +209,11 @@ function ProductDetail() {
             )}
 
             {/* Color Selection */}
-            {product.colors && (
+            {colors.length > 0 && (
               <div>
                 <h3 className="font-semibold mb-3">Couleur : <span className="text-primary">{selectedColor}</span></h3>
                 <div className="flex flex-wrap gap-2">
-                  {product.colors.map(color => (
+                  {colors.map(color => (
                     <button
                       key={color}
                       onClick={() => setSelectedColor(color)}

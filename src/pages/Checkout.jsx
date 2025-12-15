@@ -9,6 +9,11 @@ function Checkout() {
   const { items, getTotal, clearCart } = useCartStore();
   const navigate = useNavigate();
   
+  // Check if account is suspended
+  const returns = JSON.parse(localStorage.getItem('returns') || '[]');
+  const MAX_RETURNS = 3;
+  const isAccountSuspended = returns.length >= MAX_RETURNS;
+
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -32,6 +37,27 @@ function Checkout() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    
+    // Check if account is suspended before processing
+    if (isAccountSuspended) {
+      alert('Votre compte est suspendu. Vous ne pouvez plus passer de commandes car vous avez atteint le nombre maximum de retours autorisés (3). Veuillez contacter le service client.');
+      return;
+    }
+
+    // Create order object
+    const order = {
+      id: Date.now(),
+      date: new Date().toISOString(),
+      items: items,
+      total: getTotal(),
+      status: 'En cours',
+      shippingAddress: formData
+    };
+
+    // Save to history
+    const history = JSON.parse(localStorage.getItem('purchaseHistory') || '[]');
+    localStorage.setItem('purchaseHistory', JSON.stringify([order, ...history]));
+
     // Simulation de commande
     alert('Commande confirmée ! Merci pour votre achat.');
     clearCart();
@@ -72,6 +98,42 @@ function Checkout() {
 
       <main className="relative px-4 sm:px-6 lg:px-10 py-8">
         <div className="max-w-6xl mx-auto">
+          
+          {/* Account Suspension Warning */}
+          {isAccountSuspended && (
+            <motion.div 
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 rounded-xl shadow-lg p-6 mb-8"
+            >
+              <div className="flex items-start gap-4">
+                <div className="flex-shrink-0">
+                  <span className="material-symbols-outlined text-red-600 dark:text-red-400 text-4xl">
+                    block
+                  </span>
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-red-900 dark:text-red-300 mb-2">
+                    ⛔ Compte Suspendu - Commande Impossible
+                  </h3>
+                  <p className="text-red-800 dark:text-red-200 mb-3">
+                    Vous avez atteint le nombre maximum de retours autorisés ({MAX_RETURNS} retours). 
+                    Votre compte est suspendu et vous ne pouvez plus passer de nouvelles commandes.
+                  </p>
+                  <p className="text-red-700 dark:text-red-300 text-sm">
+                    Veuillez contacter le service client pour débloquer votre compte.
+                  </p>
+                  <Link 
+                    to="/profile" 
+                    className="inline-block mt-4 px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                  >
+                    Voir mon profil
+                  </Link>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
           {/* Breadcrumb */}
           <nav className="flex items-center gap-2 text-sm mb-8">
             <Link to="/" className="text-gray-500 hover:text-primary">Accueil</Link>

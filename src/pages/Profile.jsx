@@ -8,11 +8,14 @@ function Profile() {
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   const purchaseHistory = JSON.parse(localStorage.getItem('purchaseHistory') || '[]');
   const returns = JSON.parse(localStorage.getItem('returns') || '[]');
+  const MAX_RETURNS = 3;
 
   // Calculate statistics
   const totalPurchased = purchaseHistory.reduce((sum, order) => sum + (order.items?.length || 0), 0);
   const totalReturned = returns.length;
   const totalSpent = purchaseHistory.reduce((sum, order) => sum + (order.total || 0), 0);
+  const isAccountSuspended = totalReturned >= MAX_RETURNS;
+  const returnsRemaining = Math.max(0, MAX_RETURNS - totalReturned);
 
   const handleLogout = () => {
     localStorage.removeItem('user');
@@ -76,16 +79,31 @@ function Profile() {
           </div>
 
           {/* Total Returned */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border-l-4 border-orange-500">
+          <div className={`bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border-l-4 ${
+            isAccountSuspended ? 'border-red-500' : totalReturned >= 2 ? 'border-orange-500' : 'border-yellow-500'
+          }`}>
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 dark:text-gray-400 text-sm font-medium">Total Retourné</p>
-                <p className="text-4xl font-bold text-gray-900 dark:text-white mt-2">{totalReturned}</p>
-                <p className="text-gray-500 dark:text-gray-500 text-sm mt-1">Produits</p>
+                <p className="text-gray-600 dark:text-gray-400 text-sm font-medium">Compteur de Retours</p>
+                <p className={`text-4xl font-bold mt-2 ${
+                  isAccountSuspended ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-white'
+                }`}>{totalReturned}/{MAX_RETURNS}</p>
+                <p className={`text-sm mt-1 font-medium ${
+                  isAccountSuspended ? 'text-red-600 dark:text-red-400' : 
+                  totalReturned >= 2 ? 'text-orange-600 dark:text-orange-400' : 'text-gray-500'
+                }`}>
+                  {isAccountSuspended ? 'Compte suspendu' : `${returnsRemaining} restant(s)`}
+                </p>
               </div>
-              <div className="w-16 h-16 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center">
-                <span className="material-symbols-outlined text-orange-600 dark:text-orange-400 text-3xl">
-                  assignment_return
+              <div className={`w-16 h-16 rounded-full flex items-center justify-center ${
+                isAccountSuspended ? 'bg-red-100 dark:bg-red-900/30' : 
+                totalReturned >= 2 ? 'bg-orange-100 dark:bg-orange-900/30' : 'bg-yellow-100 dark:bg-yellow-900/30'
+              }`}>
+                <span className={`material-symbols-outlined text-3xl ${
+                  isAccountSuspended ? 'text-red-600 dark:text-red-400' : 
+                  totalReturned >= 2 ? 'text-orange-600 dark:text-orange-400' : 'text-yellow-600 dark:text-yellow-400'
+                }`}>
+                  {isAccountSuspended ? 'block' : 'assignment_return'}
                 </span>
               </div>
             </div>
@@ -107,6 +125,53 @@ function Profile() {
             </div>
           </div>
         </div>
+
+        {/* Account Suspension Warning */}
+        {isAccountSuspended && (
+          <div className="bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 rounded-xl shadow-lg p-6 mb-8">
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0">
+                <span className="material-symbols-outlined text-red-600 dark:text-red-400 text-4xl">
+                  warning
+                </span>
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-red-900 dark:text-red-300 mb-2">
+                  ⚠️ Compte Suspendu
+                </h3>
+                <p className="text-red-800 dark:text-red-200 mb-3">
+                  Vous avez atteint le nombre maximum de retours autorisés ({MAX_RETURNS} retours). 
+                  Votre compte est temporairement suspendu et vous ne pouvez plus passer de nouvelles commandes.
+                </p>
+                <p className="text-red-700 dark:text-red-300 text-sm">
+                  Veuillez contacter le service client pour plus d'informations.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Warning when approaching limit */}
+        {!isAccountSuspended && totalReturned >= 2 && (
+          <div className="bg-orange-50 dark:bg-orange-900/20 border-l-4 border-orange-500 rounded-xl shadow-lg p-6 mb-8">
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0">
+                <span className="material-symbols-outlined text-orange-600 dark:text-orange-400 text-3xl">
+                  info
+                </span>
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-orange-900 dark:text-orange-300 mb-2">
+                  Attention : Limite de retours bientôt atteinte
+                </h3>
+                <p className="text-orange-800 dark:text-orange-200">
+                  Il vous reste {returnsRemaining} retour(s) autorisé(s). Après {MAX_RETURNS} retours, 
+                  votre compte sera suspendu et vous ne pourrez plus commander.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Order History */}
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 mb-8">

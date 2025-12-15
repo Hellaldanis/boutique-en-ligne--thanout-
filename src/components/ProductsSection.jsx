@@ -1,73 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ProductCard from './ProductCard';
-
-const products = [
-  {
-    id: 1,
-    name: 'Baskets Urbaines Premium',
-    category: 'Chaussures',
-    price: 15000,
-    oldPrice: 20000,
-    discount: 25,
-    image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=300&h=400&fit=crop',
-    rating: 4.5,
-    reviews: 128,
-    tags: ['sport', 'casual', 'confort']
-  },
-  {
-    id: 2,
-    name: 'Sac à Main en Cuir Véritable',
-    category: 'Accessoires',
-    price: 32000,
-    image: 'https://images.unsplash.com/photo-1590874103328-eac38a683ce7?w=300&h=400&fit=crop',
-    rating: 5,
-    reviews: 89,
-    tags: ['luxe', 'élégant', 'cuir']
-  },
-  {
-    id: 3,
-    name: 'T-Shirt Essentiel Cotton Bio',
-    category: 'Mode',
-    price: 4000,
-    image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=300&h=400&fit=crop',
-    rating: 4,
-    reviews: 203,
-    tags: ['basique', 'confortable', 'bio']
-  },
-  {
-    id: 4,
-    name: 'Montre Classique Automatique',
-    category: 'Accessoires',
-    price: 25000,
-    image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300&h=400&fit=crop',
-    rating: 4.5,
-    reviews: 156,
-    tags: ['élégant', 'automatique', 'classique']
-  },
-  {
-    id: 5,
-    name: 'Écouteurs Sans Fil Pro',
-    category: 'Électronique',
-    price: 18000,
-    oldPrice: 24000,
-    discount: 25,
-    image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300&h=400&fit=crop',
-    rating: 4.8,
-    reviews: 312,
-    tags: ['audio', 'bluetooth', 'premium']
-  },
-  {
-    id: 6,
-    name: 'Veste en Jean Délavé',
-    category: 'Mode',
-    price: 8500,
-    image: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=300&h=400&fit=crop',
-    rating: 4.3,
-    reviews: 95,
-    tags: ['denim', 'vintage', 'casual']
-  },
-];
+import { products } from '../data/products';
 
 function ProductsSection() {
   const [searchQuery, setSearchQuery] = useState('');

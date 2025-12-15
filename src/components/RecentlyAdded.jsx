@@ -66,7 +66,7 @@ function RecentlyAdded() {
             Découvrez nos derniers arrivages
           </p>
         </div>
-        <Link to="/categories" className="text-sm font-medium text-primary hover:underline">
+        <Link to="/nouveautes" className="text-sm font-medium text-primary hover:underline">
           Voir tout →
         </Link>
       </div>

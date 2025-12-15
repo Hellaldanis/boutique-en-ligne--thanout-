@@ -45,6 +45,19 @@ function SignUp() {
     navigate('/');
   };
 
+  const handleGoogleLogin = () => {
+    // Simulation de connexion Google
+    const googleUser = {
+      email: 'user@gmail.com',
+      name: 'Google User',
+      avatar: 'https://lh3.googleusercontent.com/a/default-user=s96-c'
+    };
+    localStorage.setItem('user', JSON.stringify(googleUser));
+    localStorage.setItem('isLoggedIn', 'true');
+    alert('Inscription avec Google réussie !');
+    navigate('/');
+  };
+
   return (
     <div className="min-h-screen relative overflow-hidden">
       {/* Background */}
@@ -199,7 +212,7 @@ function SignUp() {
               <div className="grid grid-cols-2 gap-4">
                 <button
                   type="button"
-                  onClick={() => alert('Inscription Google - Fonctionnalité à venir')}
+                  onClick={handleGoogleLogin}
                   className="flex items-center justify-center gap-2 px-4 py-3 border-2 border-gray-300 dark:border-gray-700 rounded-lg hover:border-primary transition-colors"
                 >
                   <svg className="w-5 h-5" viewBox="0 0 24 24">

@@ -1,17 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { useCartStore, useFavoritesStore, useCompareStore } from '../store';
+import { useCartStore, useFavoritesStore } from '../store';
 import CartDrawer from './CartDrawer';
-import CompareModal from './CompareModal';
 
 function Header() {
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [isCompareOpen, setIsCompareOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { items } = useCartStore();
   const { items: favorites } = useFavoritesStore();
-  const { items: compareItems } = useCompareStore();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -23,7 +20,7 @@ function Header() {
     <>
       <header className="flex items-center justify-between whitespace-nowrap border-b border-solid border-gray-200 dark:border-gray-800 px-4 sm:px-6 lg:px-10 py-3 w-full bg-background-light dark:bg-background-dark sticky top-0 z-50 backdrop-blur-sm bg-opacity-90 dark:bg-opacity-90">
         <div className="flex items-center gap-8">
-          <div className="flex items-center gap-3 text-gray-900 dark:text-gray-100">
+          <Link to="/" className="flex items-center gap-3 text-gray-900 dark:text-gray-100">
             <div className="w-8 h-8 text-primary">
               <svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
                 <path d="M6 36L16.2353 22.5L24 32.5L34.2353 18.5L42 36H6Z" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="4"></path>
@@ -31,13 +28,11 @@ function Header() {
               </svg>
             </div>
             <h2 className="text-xl font-bold tracking-tight">Thanout</h2>
-          </div>
+          </Link>
           <nav className="hidden md:flex items-center gap-8">
-            <Link className="text-sm font-medium hover:text-primary transition-colors" to="/">Accueil</Link>
-            <Link className="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-primary transition-colors" to="/categories">Produits</Link>
             <Link className="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-primary transition-colors" to="/categories">Catégories</Link>
-            <a className="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-primary transition-colors" href="#">Promotions</a>
-            <a className="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-primary transition-colors" href="#">Nouveautés</a>
+            <Link className="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-primary transition-colors" to="/promotions">Promotions</Link>
+            <Link className="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-primary transition-colors" to="/nouveautes">Nouveautés</Link>
           </nav>
         </div>
         <div className="flex flex-1 justify-end gap-2 sm:gap-4">
@@ -49,6 +44,11 @@ function Header() {
               <input 
                 className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-gray-900 dark:text-gray-100 focus:outline-0 focus:ring-2 focus:ring-primary/50 border-none bg-gray-100 dark:bg-gray-800 h-full placeholder:text-gray-500 dark:placeholder:text-gray-400 px-4 rounded-l-none border-l-0 pl-2 text-sm" 
                 placeholder="Rechercher un produit..." 
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    navigate(`/categories?q=${e.target.value}`);
+                  }
+                }}
               />
             </div>
           </label>
@@ -62,24 +62,6 @@ function Header() {
             <button className="flex sm:hidden cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 w-10 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 text-sm font-bold transition-colors">
               <span className="material-symbols-outlined text-xl">search</span>
             </button>
-            <motion.button 
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              onClick={() => setIsCompareOpen(true)}
-              className="relative flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 w-10 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 text-sm font-bold transition-colors"
-              title="Comparer les produits"
-            >
-              <span className="material-symbols-outlined text-xl">compare</span>
-              {compareItems.length > 0 && (
-                <motion.span
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  className="absolute -top-1 -right-1 w-5 h-5 bg-blue-500 text-white text-xs rounded-full flex items-center justify-center font-bold"
-                >
-                  {compareItems.length}
-                </motion.span>
-              )}
-            </motion.button>
             <motion.button 
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
@@ -130,7 +112,6 @@ function Header() {
       </header>
 
       <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
-      <CompareModal isOpen={isCompareOpen} onClose={() => setIsCompareOpen(false)} />
     </>
   );
 }
