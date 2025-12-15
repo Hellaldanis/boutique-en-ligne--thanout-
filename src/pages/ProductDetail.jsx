@@ -46,6 +46,120 @@ const allProducts = [
     colors: ['Marron', 'Noir', 'Beige'],
     stock: 23,
     brand: 'LuxeLeather'
+  },
+  {
+    id: 3,
+    name: 'T-Shirt Essentiel Cotton Bio',
+    category: 'Mode',
+    price: 4000,
+    image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&h=800&fit=crop',
+    images: [
+      'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&h=800&fit=crop',
+      'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=800&h=800&fit=crop'
+    ],
+    rating: 4,
+    reviews: 203,
+    description: 'T-shirt basique en coton bio de haute qualité. Doux au toucher et respectueux de l\'environnement.',
+    features: ['100% Coton Bio', 'Coupe régulière', 'Col rond', 'Durable'],
+    sizes: ['S', 'M', 'L', 'XL', 'XXL'],
+    colors: ['Noir', 'Blanc', 'Gris', 'Bleu Marine'],
+    stock: 150,
+    brand: 'EcoWear'
+  },
+  {
+    id: 4,
+    name: 'Montre Classique Automatique',
+    category: 'Accessoires',
+    price: 25000,
+    image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&h=800&fit=crop',
+    images: [
+      'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&h=800&fit=crop',
+      'https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=800&h=800&fit=crop'
+    ],
+    rating: 4.5,
+    reviews: 156,
+    description: 'Montre automatique au design intemporel. Mécanisme de précision et bracelet en cuir véritable.',
+    features: ['Mouvement automatique', 'Verre saphir', 'Étanche 50m', 'Bracelet cuir'],
+    colors: ['Argent/Noir', 'Or/Marron'],
+    stock: 15,
+    brand: 'TimeMaster'
+  },
+  {
+    id: 5,
+    name: 'Écouteurs Sans Fil Pro',
+    category: 'Électronique',
+    price: 18000,
+    oldPrice: 24000,
+    discount: 25,
+    image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&h=800&fit=crop',
+    images: [
+      'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&h=800&fit=crop',
+      'https://images.unsplash.com/photo-1583394838336-acd977736f90?w=800&h=800&fit=crop'
+    ],
+    rating: 4.8,
+    reviews: 312,
+    description: 'Expérience audio immersive avec réduction de bruit active. Autonomie longue durée et confort exceptionnel.',
+    features: ['Réduction de bruit active', 'Bluetooth 5.2', 'Autonomie 24h', 'Microphone HD'],
+    colors: ['Noir', 'Blanc', 'Argent'],
+    stock: 80,
+    brand: 'AudioTech'
+  },
+  {
+    id: 6,
+    name: 'Veste en Jean Délavé',
+    category: 'Mode',
+    price: 8500,
+    image: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800&h=800&fit=crop',
+    images: [
+      'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800&h=800&fit=crop',
+      'https://images.unsplash.com/photo-1542272617-08f086302542?w=800&h=800&fit=crop'
+    ],
+    rating: 4.3,
+    reviews: 95,
+    description: 'Veste en jean style vintage avec effet délavé. Un classique indémodable pour votre garde-robe.',
+    features: ['Denim robuste', 'Coupe ajustée', '4 poches', 'Boutons métalliques'],
+    sizes: ['S', 'M', 'L', 'XL'],
+    colors: ['Bleu Délavé', 'Noir', 'Gris'],
+    stock: 40,
+    brand: 'DenimCo'
+  },
+  {
+    id: 7,
+    name: 'Smartphone Pro Max',
+    category: 'Électronique',
+    price: 85000,
+    image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&h=800&fit=crop',
+    images: [
+      'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800&h=800&fit=crop',
+      'https://images.unsplash.com/photo-1598327105666-5b89351aff23?w=800&h=800&fit=crop'
+    ],
+    rating: 4.9,
+    reviews: 421,
+    description: 'Le dernier cri de la technologie mobile. Écran ultra-fluide, appareil photo professionnel et performances inégalées.',
+    features: ['Écran OLED 120Hz', 'Processeur dernière génération', 'Triple capteur photo', '5G'],
+    colors: ['Graphite', 'Argent', 'Or', 'Bleu Pacifique'],
+    stock: 10,
+    brand: 'TechGiant'
+  },
+  {
+    id: 8,
+    name: 'Lunettes de Soleil Polarisées',
+    category: 'Accessoires',
+    price: 6500,
+    oldPrice: 9000,
+    discount: 28,
+    image: 'https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=800&h=800&fit=crop',
+    images: [
+      'https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=800&h=800&fit=crop',
+      'https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=800&h=800&fit=crop'
+    ],
+    rating: 4.6,
+    reviews: 178,
+    description: 'Protection optimale et style affirmé. Verres polarisés pour une vision claire sans reflets.',
+    features: ['Verres polarisés UV400', 'Monture légère', 'Anti-rayures', 'Étui inclus'],
+    colors: ['Noir', 'Écaille', 'Doré'],
+    stock: 60,
+    brand: 'SunStyle'
   }
 ];
 
