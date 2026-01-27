@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import { useCartStore, useFavoritesStore, useCompareStore } from '../store';
+import { useCartStore, useFavoritesStore } from '../store';
 import { products } from '../data/products';
 
 function ProductDetail() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const product = products.find(p => p.id === parseInt(id));
   
   const [selectedImage, setSelectedImage] = useState(0);
@@ -18,7 +19,6 @@ function ProductDetail() {
 
   const { addItem } = useCartStore();
   const { toggleFavorite, isFavorite } = useFavoritesStore();
-  const { addToCompare } = useCompareStore();
 
   if (!product) {
     return (
@@ -47,10 +47,20 @@ function ProductDetail() {
     setTimeout(() => setShowNotification(''), 2000);
   };
 
-  const handleCompare = () => {
-    const result = addToCompare(product);
-    setShowNotification(result.message);
-    setTimeout(() => setShowNotification(''), 2000);
+  const handleBuyNow = () => {
+    // Ajouter au panier
+    addItem({ ...product, selectedSize, selectedColor, quantity });
+    
+    // Vérifier si connecté
+    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+    
+    if (!isLoggedIn) {
+      // Rediriger vers login puis checkout
+      navigate('/login?redirect=checkout');
+    } else {
+      // Rediriger directement vers checkout
+      navigate('/checkout');
+    }
   };
 
   const productIsFavorite = isFavorite(product.id);
@@ -256,40 +266,43 @@ function ProductDetail() {
             </div>
 
             {/* Actions */}
-            <div className="flex gap-4 pt-4">
+            <div className="space-y-3 pt-4">
               <motion.button
-                onClick={handleAddToCart}
+                onClick={handleBuyNow}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="flex-1 bg-gradient-to-r from-primary to-blue-600 text-white py-4 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition-shadow flex items-center justify-center gap-2"
+                className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-4 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition-shadow flex items-center justify-center gap-2"
               >
-                <span className="material-symbols-outlined">shopping_cart</span>
-                Ajouter au panier
+                <span className="material-symbols-outlined">shopping_bag</span>
+                Acheter maintenant
               </motion.button>
 
-              <motion.button
-                onClick={() => toggleFavorite(product)}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className={`w-14 h-14 rounded-xl flex items-center justify-center border-2 transition-all ${
-                  productIsFavorite
-                    ? 'bg-red-500 border-red-500 text-white'
-                    : 'border-gray-300 dark:border-gray-700 hover:border-red-500'
-                }`}
-              >
-                <span className="material-symbols-outlined" style={{ fontVariationSettings: productIsFavorite ? "'FILL' 1" : "'FILL' 0" }}>
-                  favorite
-                </span>
-              </motion.button>
+              <div className="flex gap-3">
+                <motion.button
+                  onClick={handleAddToCart}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="flex-1 bg-gradient-to-r from-primary to-blue-600 text-white py-4 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition-shadow flex items-center justify-center gap-2"
+                >
+                  <span className="material-symbols-outlined">shopping_cart</span>
+                  Ajouter au panier
+                </motion.button>
 
-              <motion.button
-                onClick={handleCompare}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="w-14 h-14 rounded-xl flex items-center justify-center border-2 border-gray-300 dark:border-gray-700 hover:border-primary transition-colors"
-              >
-                <span className="material-symbols-outlined">compare</span>
-              </motion.button>
+                <motion.button
+                  onClick={() => toggleFavorite(product)}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className={`w-14 h-14 rounded-xl flex items-center justify-center border-2 transition-all ${
+                    productIsFavorite
+                      ? 'bg-red-500 border-red-500 text-white'
+                      : 'border-gray-300 dark:border-gray-700 hover:border-red-500'
+                  }`}
+                >
+                  <span className="material-symbols-outlined" style={{ fontVariationSettings: productIsFavorite ? "'FILL' 1" : "'FILL' 0" }}>
+                    favorite
+                  </span>
+                </motion.button>
+              </div>
             </div>
           </div>
         </div>

@@ -93,42 +93,6 @@ export const useThemeStore = create(
   )
 );
 
-export const useCompareStore = create(
-  persist(
-    (set, get) => ({
-      items: [],
-      maxItems: 4,
-
-      addToCompare: (product) => {
-        const { items, maxItems } = get();
-        if (items.length >= maxItems) {
-          return { success: false, message: `Vous pouvez comparer jusqu'à ${maxItems} produits maximum` };
-        }
-        if (items.find(item => item.id === product.id)) {
-          return { success: false, message: 'Ce produit est déjà dans la comparaison' };
-        }
-        set({ items: [...items, product] });
-        return { success: true, message: 'Produit ajouté à la comparaison' };
-      },
-
-      removeFromCompare: (productId) => {
-        set({ items: get().items.filter(item => item.id !== productId) });
-      },
-
-      clearCompare: () => {
-        set({ items: [] });
-      },
-
-      isInCompare: (productId) => {
-        return get().items.some(item => item.id === productId);
-      },
-    }),
-    {
-      name: 'thanout-compare-storage',
-    }
-  )
-);
-
 export const useSearchStore = create((set) => ({
   searchQuery: '',
   recentSearches: [],
