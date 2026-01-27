@@ -1,9 +1,10 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCartStore, useFavoritesStore } from '../store';
 
 function ProductCard({ product }) {
+  const navigate = useNavigate();
   const addItem = useCartStore(state => state.addItem);
   const { toggleFavorite, isFavorite } = useFavoritesStore();
   const [showAddedNotification, setShowAddedNotification] = React.useState(false);
@@ -12,6 +13,15 @@ function ProductCard({ product }) {
     addItem(product);
     setShowAddedNotification(true);
     setTimeout(() => setShowAddedNotification(false), 2000);
+  };
+
+  const handleBuyNow = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    // Ajouter au panier
+    addItem(product);
+    // Rediriger directement vers le checkout
+    navigate('/checkout');
   };
 
   const productIsFavorite = isFavorite(product.id);
@@ -139,26 +149,48 @@ function ProductCard({ product }) {
           )}
         </div>
 
-        {/* Bouton panier */}
-        <motion.button
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            handleAddToCart();
-          }}
-          className="mt-3 w-full bg-gradient-to-r from-primary to-blue-600 text-white py-2.5 rounded-lg font-medium flex items-center justify-center gap-2 overflow-hidden relative group/btn"
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-        >
-          <motion.span
-            className="absolute inset-0 bg-gradient-to-r from-blue-600 to-primary"
-            initial={{ x: '-100%' }}
-            whileHover={{ x: 0 }}
-            transition={{ duration: 0.3 }}
-          />
-          <span className="relative z-10 material-symbols-outlined text-xl">shopping_cart</span>
-          <span className="relative z-10">Ajouter au panier</span>
-        </motion.button>
+        {/* Boutons d'action */}
+        <div className="mt-3 flex gap-2">
+          {/* Bouton Acheter maintenant */}
+          <motion.button
+            onClick={handleBuyNow}
+            className="flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white py-2.5 rounded-lg font-medium flex items-center justify-center gap-2 overflow-hidden relative group/btn"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            title="Acheter directement"
+          >
+            <motion.span
+              className="absolute inset-0 bg-gradient-to-r from-green-600 to-green-500"
+              initial={{ x: '-100%' }}
+              whileHover={{ x: 0 }}
+              transition={{ duration: 0.3 }}
+            />
+            <span className="relative z-10 material-symbols-outlined text-xl">bolt</span>
+            <span className="relative z-10 hidden sm:inline">Acheter</span>
+          </motion.button>
+
+          {/* Bouton Ajouter au panier */}
+          <motion.button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              handleAddToCart();
+            }}
+            className="flex-1 bg-gradient-to-r from-primary to-blue-600 text-white py-2.5 rounded-lg font-medium flex items-center justify-center gap-2 overflow-hidden relative group/btn"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            title="Ajouter au panier"
+          >
+            <motion.span
+              className="absolute inset-0 bg-gradient-to-r from-blue-600 to-primary"
+              initial={{ x: '-100%' }}
+              whileHover={{ x: 0 }}
+              transition={{ duration: 0.3 }}
+            />
+            <span className="relative z-10 material-symbols-outlined text-xl">shopping_cart</span>
+            <span className="relative z-10 hidden sm:inline">Panier</span>
+          </motion.button>
+        </div>
       </div>
     </motion.div>
     </Link>

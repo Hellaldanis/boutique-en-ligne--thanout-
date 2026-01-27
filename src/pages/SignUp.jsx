@@ -72,17 +72,63 @@ function SignUp() {
 
       <main className="relative px-4 sm:px-6 lg:px-10 py-16 min-h-screen flex items-center justify-center">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, x: 100, scale: 0.9 }}
+          animate={{ opacity: 1, x: 0, scale: 1 }}
+          exit={{ opacity: 0, x: -100, scale: 0.9 }}
+          transition={{ 
+            type: "spring",
+            stiffness: 260,
+            damping: 20,
+            duration: 0.6
+          }}
           className="w-full max-w-2xl"
         >
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8">
-            <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold mb-2">Créer un compte</h1>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 border border-gray-100 dark:border-gray-700">
+            {/* Boutons de basculement */}
+            <div className="flex gap-2 mb-8 bg-gradient-to-r from-gray-100 to-gray-50 dark:from-gray-900 dark:to-gray-800 p-1.5 rounded-2xl relative overflow-hidden">
+              {/* Indicateur animé */}
+              <motion.div
+                className="absolute inset-y-1.5 right-1.5 w-[calc(50%-0.375rem)] bg-gradient-to-r from-primary to-blue-600 rounded-xl shadow-lg"
+                layoutId="auth-indicator"
+                transition={{
+                  type: "spring",
+                  stiffness: 300,
+                  damping: 30
+                }}
+              />
+              <Link to="/login" className="flex-1">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="relative w-full py-3.5 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors z-10"
+                >
+                  Connexion
+                </motion.button>
+              </Link>
+              <button
+                className="relative flex-1 py-3.5 text-sm font-bold text-white z-10 transition-all"
+              >
+                <motion.span
+                  initial={{ scale: 0.9 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                >
+                  Inscription
+                </motion.span>
+              </button>
+            </div>
+
+            <motion.div 
+              className="text-center mb-8"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <h1 className="text-3xl font-bold mb-2 bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">Créer un compte</h1>
               <p className="text-gray-600 dark:text-gray-400">
                 Rejoignez Thanout et profitez d'offres exclusives
               </p>
-            </div>
+            </motion.div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

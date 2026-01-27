@@ -10,16 +10,20 @@ import Checkout from './pages/Checkout';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
 import Profile from './pages/Profile';
+import Favorites from './pages/Favorites';
+import ScrollToTop from './components/ScrollToTop';
 
 function App() {
   return (
     <Router>
+      <ScrollToTop />
       <div className="min-h-screen bg-background-light dark:bg-background-dark text-gray-900 dark:text-gray-100">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/categories" element={<Categories />} />
           <Route path="/promotions" element={<Promotions />} />
           <Route path="/nouveautes" element={<Nouveautes />} />
+          <Route path="/favorites" element={<Favorites />} />
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />} />
