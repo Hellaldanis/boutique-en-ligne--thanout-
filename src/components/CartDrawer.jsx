@@ -1,9 +1,25 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCartStore } from '../store';
 
 function CartDrawer({ isOpen, onClose }) {
   const { items, removeItem, updateQuantity, getTotal, clearCart } = useCartStore();
+  const navigate = useNavigate();
+
+  const handleCheckout = () => {
+    onClose(); // Fermer le drawer
+    
+    // Vérifier si l'utilisateur est connecté
+    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+    
+    if (!isLoggedIn) {
+      // Rediriger vers la page de connexion avec retour vers checkout
+      navigate('/login?redirect=checkout');
+    } else {
+      navigate('/checkout');
+    }
+  };
 
   return (
     <AnimatePresence>
@@ -148,7 +164,10 @@ function CartDrawer({ isOpen, onClose }) {
                     {new Intl.NumberFormat('fr-DZ').format(getTotal())} DA
                   </span>
                 </div>
-                <button className="w-full py-4 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 group">
+                <button 
+                  onClick={handleCheckout}
+                  className="w-full py-4 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 group"
+                >
                   Commander maintenant
                   <motion.span
                     className="material-symbols-outlined"

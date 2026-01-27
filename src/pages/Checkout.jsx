@@ -3,10 +3,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import { useCartStore } from '../store';
+import { useCartStore, useOrderStore } from '../store';
 
 function Checkout() {
   const { items, getTotal, clearCart } = useCartStore();
+  const { addOrder } = useOrderStore();
   const navigate = useNavigate();
   
   // Check if account is suspended
@@ -44,24 +45,49 @@ function Checkout() {
       return;
     }
 
+    const subtotal = getTotal();
+    const shipping = 500; // Frais de livraison fixes
+    const discount = 0; // Peut être calculé selon un code promo
+    const total = subtotal + shipping - discount;
+
     // Create order object
-    const order = {
-      id: Date.now(),
-      date: new Date().toISOString(),
+    const orderData = {
       items: items,
-      total: getTotal(),
-      status: 'En cours',
-      shippingAddress: formData
+      subtotal: subtotal,
+      shipping: shipping,
+      discount: discount,
+      total: total,
+      paymentMethod: formData.paymentMethod,
+      email: formData.email,
+      shippingAddress: {
+        fullName: `${formData.firstName} ${formData.lastName}`,
+        phone: formData.phone,
+        address: formData.address,
+        city: formData.city,
+        wilaya: formData.wilaya,
+        postalCode: formData.postalCode
+      }
     };
 
-    // Save to history
-    const history = JSON.parse(localStorage.getItem('purchaseHistory') || '[]');
-    localStorage.setItem('purchaseHistory', JSON.stringify([order, ...history]));
+    // Add order to store
+    const newOrder = addOrder(orderData);
 
-    // Simulation de commande
-    alert('Commande confirmée ! Merci pour votre achat.');
+    // Save to purchase history (for backward compatibility)
+    const history = JSON.parse(localStorage.getItem('purchaseHistory') || '[]');
+    localStorage.setItem('purchaseHistory', JSON.stringify([{
+      id: newOrder.id,
+      date: newOrder.date,
+      items: items,
+      total: total,
+      status: 'En cours',
+      shippingAddress: formData
+    }, ...history]));
+
+    // Clear cart
     clearCart();
-    navigate('/');
+    
+    // Redirect to order confirmation page
+    navigate(`/order-confirmation/${newOrder.id}`);
   };
 
   if (items.length === 0) {

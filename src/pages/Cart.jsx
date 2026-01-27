@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -7,6 +7,20 @@ import { useCartStore } from '../store';
 
 function Cart() {
   const { items, removeItem, updateQuantity, getTotal, clearCart } = useCartStore();
+  const navigate = useNavigate();
+
+  const handleCheckout = (e) => {
+    e.preventDefault();
+    // Vérifier si l'utilisateur est connecté
+    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+    
+    if (!isLoggedIn) {
+      // Rediriger vers la page de connexion avec retour vers checkout
+      navigate('/login?redirect=checkout');
+    } else {
+      navigate('/checkout');
+    }
+  };
 
   return (
     <div className="min-h-screen relative overflow-hidden">
@@ -164,12 +178,12 @@ function Cart() {
                     </div>
                   </div>
 
-                  <Link
-                    to="/checkout"
-                    className="block w-full py-4 bg-gradient-to-r from-primary to-blue-600 text-white rounded-xl font-bold text-center hover:shadow-xl transition-all"
+                  <button
+                    onClick={handleCheckout}
+                    className="block w-full py-4 bg-gradient-to-r from-primary to-blue-600 text-white rounded-xl font-bold text-center hover:shadow-xl transition-all cursor-pointer"
                   >
-                    Commander
-                  </Link>
+                    Commander maintenant
+                  </button>
 
                   <Link
                     to="/"

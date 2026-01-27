@@ -175,11 +175,19 @@ function Profile() {
 
         {/* Order History */}
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Historique des Commandes</h2>
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Historique des Commandes</h2>
+            <Link 
+              to="/orders"
+              className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors font-medium"
+            >
+              Voir tout
+            </Link>
+          </div>
           
           {purchaseHistory.length > 0 ? (
             <div className="space-y-4">
-              {purchaseHistory.map((order, index) => (
+              {purchaseHistory.slice(0, 3).map((order, index) => (
                 <div key={index} className="border border-gray-200 dark:border-gray-700 rounded-lg p-6 hover:shadow-md transition-shadow">
                   <div className="flex justify-between items-start flex-wrap gap-4">
                     <div>

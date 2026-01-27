@@ -128,3 +128,61 @@ export const useCompareStore = create(
     }
   )
 );
+
+export const useSearchStore = create((set) => ({
+  searchQuery: '',
+  recentSearches: [],
+  
+  setSearchQuery: (query) => set({ searchQuery: query }),
+  
+  addRecentSearch: (query) => {
+    set((state) => {
+      const filtered = state.recentSearches.filter(q => q !== query);
+      return {
+        recentSearches: [query, ...filtered].slice(0, 5)
+      };
+    });
+  },
+  
+  clearRecentSearches: () => set({ recentSearches: [] }),
+}));
+
+export const useOrderStore = create(
+  persist(
+    (set, get) => ({
+      orders: [],
+      
+      addOrder: (orderData) => {
+        const newOrder = {
+          id: `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
+          date: new Date().toISOString(),
+          status: 'pending',
+          ...orderData
+        };
+        set({ orders: [newOrder, ...get().orders] });
+        return newOrder;
+      },
+      
+      getOrderById: (orderId) => {
+        return get().orders.find(order => order.id === orderId);
+      },
+      
+      updateOrderStatus: (orderId, status) => {
+        set({
+          orders: get().orders.map(order =>
+            order.id === orderId ? { ...order, status } : order
+          )
+        });
+      },
+      
+      getUserOrders: () => {
+        return get().orders;
+      },
+      
+      clearOrders: () => set({ orders: [] }),
+    }),
+    {
+      name: 'thanout-orders',
+    }
+  )
+);
