@@ -26,6 +26,18 @@ function Checkout() {
     postalCode: '',
     paymentMethod: 'cash'
   });
+  
+  const [promoCode, setPromoCode] = useState('');
+  const [appliedPromo, setAppliedPromo] = useState(null);
+  const [promoError, setPromoError] = useState('');
+
+  // Available promo codes
+  const promoCodes = {
+    'WELCOME10': { type: 'percentage', value: 10, description: 'Réduction de 10%' },
+    'THANOUT20': { type: 'percentage', value: 20, description: 'Réduction de 20%' },
+    'SAVE5000': { type: 'fixed', value: 5000, description: 'Réduction de 5000 CFA' },
+    'FREESHIP': { type: 'shipping', value: 0, description: 'Livraison gratuite' }
+  };
 
   const wilayas = [
     'Alger', 'Oran', 'Constantine', 'Annaba', 'Blida', 'Batna', 'Djelfa', 
@@ -34,6 +46,45 @@ function Checkout() {
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+  
+  const handleApplyPromo = () => {
+    const code = promoCode.toUpperCase().trim();
+    if (promoCodes[code]) {
+      setAppliedPromo({ code, ...promoCodes[code] });
+      setPromoError('');
+    } else {
+      setPromoError('Code promo invalide');
+      setAppliedPromo(null);
+    }
+  };
+  
+  const handleRemovePromo = () => {
+    setAppliedPromo(null);
+    setPromoCode('');
+    setPromoError('');
+  };
+  
+  const calculateDiscount = () => {
+    if (!appliedPromo) return 0;
+    
+    const subtotal = getTotal();
+    
+    if (appliedPromo.type === 'percentage') {
+      return Math.floor((subtotal * appliedPromo.value) / 100);
+    } else if (appliedPromo.type === 'fixed') {
+      return appliedPromo.value;
+    }
+    
+    return 0;
+  };
+  
+  const calculateShipping = () => {
+    const baseShipping = 500;
+    if (appliedPromo && appliedPromo.type === 'shipping') {
+      return 0; // Free shipping
+    }
+    return baseShipping;
   };
 
   const handleSubmit = (e) => {
@@ -46,8 +97,8 @@ function Checkout() {
     }
 
     const subtotal = getTotal();
-    const shipping = 500; // Frais de livraison fixes
-    const discount = 0; // Peut être calculé selon un code promo
+    const shipping = calculateShipping();
+    const discount = calculateDiscount();
     const total = subtotal + shipping - discount;
 
     // Create order object
@@ -57,6 +108,7 @@ function Checkout() {
       shipping: shipping,
       discount: discount,
       total: total,
+      promoCode: appliedPromo ? appliedPromo.code : null,
       paymentMethod: formData.paymentMethod,
       email: formData.email,
       shippingAddress: {
@@ -358,6 +410,59 @@ function Checkout() {
                     </div>
                   ))}
                 </div>
+                
+                {/* Promo Code Section */}
+                <div className="mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
+                  <label className="block text-sm font-medium mb-2">Code promo</label>
+                  {!appliedPromo ? (
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={promoCode}
+                        onChange={(e) => {
+                          setPromoCode(e.target.value);
+                          setPromoError('');
+                        }}
+                        placeholder="Entrez votre code"
+                        className="flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent text-sm"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleApplyPromo}
+                        className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors text-sm font-medium whitespace-nowrap"
+                      >
+                        Appliquer
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="bg-green-50 dark:bg-green-900/20 border border-green-500 rounded-lg p-3 flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="text-green-600 dark:text-green-400">✓</span>
+                        <div>
+                          <p className="text-sm font-semibold text-green-800 dark:text-green-300">
+                            {appliedPromo.code}
+                          </p>
+                          <p className="text-xs text-green-700 dark:text-green-400">
+                            {appliedPromo.description}
+                          </p>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleRemovePromo}
+                        className="text-green-600 dark:text-green-400 hover:text-green-800 dark:hover:text-green-200"
+                      >
+                        <span className="material-symbols-outlined text-sm">close</span>
+                      </button>
+                    </div>
+                  )}
+                  {promoError && (
+                    <p className="mt-2 text-sm text-red-500">{promoError}</p>
+                  )}
+                  <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                    Codes disponibles: WELCOME10, THANOUT20, SAVE5000, FREESHIP
+                  </div>
+                </div>
 
                 <div className="space-y-3 mb-6 pt-4 border-t border-gray-200 dark:border-gray-700">
                   <div className="flex justify-between text-sm">
@@ -366,19 +471,36 @@ function Checkout() {
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600 dark:text-gray-400">Livraison</span>
-                    <span className="font-semibold text-green-500">Gratuite</span>
+                    <span className={`font-semibold ${calculateShipping() === 0 ? 'text-green-500' : ''}`}>
+                      {calculateShipping() === 0 ? 'Gratuite' : `${new Intl.NumberFormat('fr-DZ').format(calculateShipping())} DA`}
+                    </span>
                   </div>
+                  {calculateDiscount() > 0 && (
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600 dark:text-gray-400">Réduction</span>
+                      <span className="font-semibold text-green-500">
+                        -{new Intl.NumberFormat('fr-DZ').format(calculateDiscount())} DA
+                      </span>
+                    </div>
+                  )}
                   <div className="flex justify-between text-xl pt-3 border-t border-gray-200 dark:border-gray-700">
                     <span className="font-bold">Total</span>
-                    <span className="font-bold text-primary">{new Intl.NumberFormat('fr-DZ').format(getTotal())} DA</span>
+                    <span className="font-bold text-primary">
+                      {new Intl.NumberFormat('fr-DZ').format(getTotal() + calculateShipping() - calculateDiscount())} DA
+                    </span>
                   </div>
                 </div>
 
                 <button
                   type="submit"
-                  className="w-full py-4 bg-gradient-to-r from-primary to-blue-600 text-white rounded-xl font-bold hover:shadow-xl transition-all"
+                  disabled={isAccountSuspended}
+                  className={`w-full py-4 rounded-xl font-bold transition-all ${
+                    isAccountSuspended 
+                      ? 'bg-gray-400 cursor-not-allowed' 
+                      : 'bg-gradient-to-r from-primary to-blue-600 text-white hover:shadow-xl'
+                  }`}
                 >
-                  Confirmer la commande
+                  {isAccountSuspended ? 'Compte suspendu' : 'Confirmer la commande'}
                 </button>
               </motion.div>
             </div>

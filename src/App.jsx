@@ -14,6 +14,11 @@ import Favorites from './pages/Favorites';
 import Search from './pages/Search';
 import Orders from './pages/Orders';
 import OrderConfirmation from './pages/OrderConfirmation';
+import NotFound from './pages/NotFound';
+import Contact from './pages/Contact';
+import CGV from './pages/CGV';
+import MentionsLegales from './pages/MentionsLegales';
+import PolitiqueConfidentialite from './pages/PolitiqueConfidentialite';
 import ScrollToTop from './components/ScrollToTop';
 
 function App() {
@@ -36,6 +41,11 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/cgv" element={<CGV />} />
+          <Route path="/mentions-legales" element={<MentionsLegales />} />
+          <Route path="/politique-confidentialite" element={<PolitiqueConfidentialite />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
     </Router>

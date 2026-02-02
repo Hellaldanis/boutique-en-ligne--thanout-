@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import ProductReviews from '../components/ProductReviews';
 import { useCartStore, useFavoritesStore } from '../store';
 import { products } from '../data/products';
 
@@ -305,6 +306,11 @@ function ProductDetail() {
               </div>
             </div>
           </div>
+        </div>
+        
+        {/* Product Reviews Section */}
+        <div className="max-w-7xl mx-auto mt-12">
+          <ProductReviews productId={product.id} productName={product.name} />
         </div>
       </main>
 
