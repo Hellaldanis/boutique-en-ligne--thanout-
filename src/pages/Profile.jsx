@@ -1,14 +1,43 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import { API_ENDPOINTS, getAuthHeaders } from '../config/api';
 
 function Profile() {
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
   const purchaseHistory = JSON.parse(localStorage.getItem('purchaseHistory') || '[]');
   const returns = JSON.parse(localStorage.getItem('returns') || '[]');
   const MAX_RETURNS = 3;
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await fetch(API_ENDPOINTS.AUTH.PROFILE, {
+          headers: getAuthHeaders()
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setUser(data.user || data);
+        } else {
+          // Fallback to localStorage
+          const localUser = JSON.parse(localStorage.getItem('user') || '{}');
+          setUser(localUser);
+        }
+      } catch (error) {
+        console.error('Erreur lors du chargement du profil:', error);
+        const localUser = JSON.parse(localStorage.getItem('user') || '{}');
+        setUser(localUser);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, []);
 
   // Calculate statistics
   const totalPurchased = purchaseHistory.reduce((sum, order) => sum + (order.items?.length || 0), 0);
@@ -20,11 +49,27 @@ function Profile() {
   const handleLogout = () => {
     localStorage.removeItem('user');
     localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('token');
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('isAdmin');
     navigate('/login');
   };
 
+  // Show loading
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <Header />
+        <div className="flex items-center justify-center py-20">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
   // If not logged in, redirect
-  if (!user.email) {
+  if (!user || !user.email) {
     navigate('/login');
     return null;
   }
@@ -38,25 +83,46 @@ function Profile() {
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 mb-8">
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div className="flex items-center gap-6">
-              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center text-white text-3xl font-bold">
+              <div className={`w-24 h-24 rounded-full flex items-center justify-center text-white text-3xl font-bold ${user.adminUser ? 'bg-gradient-to-br from-purple-600 to-indigo-600' : 'bg-gradient-to-br from-primary to-blue-600'}`}>
                 {user.firstName?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || 'U'}
               </div>
               <div>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                  {user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : 'Mon Profil'}
-                </h1>
+                <div className="flex items-center gap-3">
+                  <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                    {user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : 'Mon Profil'}
+                  </h1>
+                  {user.adminUser && (
+                    <span className="px-3 py-1 bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-xs font-bold rounded-full uppercase">
+                      {user.adminUser.role === 'super_admin' ? 'Super Admin' : 'Admin'}
+                    </span>
+                  )}
+                </div>
                 <p className="text-gray-600 dark:text-gray-400 mt-1">{user.email}</p>
                 {user.phone && (
                   <p className="text-gray-600 dark:text-gray-400 mt-1">{user.phone}</p>
                 )}
+                {user.isVerified && (
+                  <p className="text-green-500 text-sm mt-1 flex items-center gap-1">
+                    <span className="material-symbols-outlined text-sm">verified</span>
+                    Compte vérifié
+                  </p>
+                )}
               </div>
             </div>
-            <button
-              onClick={handleLogout}
-              className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
-            >
-              Déconnexion
-            </button>
+            <div className="flex gap-3">
+              {user.adminUser && (
+                <Link to="/admin" className="px-6 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg hover:from-purple-700 hover:to-indigo-700 transition-colors flex items-center gap-2">
+                  <span className="material-symbols-outlined text-xl">admin_panel_settings</span>
+                  Admin Panel
+                </Link>
+              )}
+              <button
+                onClick={handleLogout}
+                className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+              >
+                Déconnexion
+              </button>
+            </div>
           </div>
         </div>
 

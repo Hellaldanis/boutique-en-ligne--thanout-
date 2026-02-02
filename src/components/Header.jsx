@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCartStore, useFavoritesStore, useSearchStore } from '../store';
 import CartDrawer from './CartDrawer';
@@ -7,6 +7,8 @@ import CartDrawer from './CartDrawer';
 function Header() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [user, setUser] = useState(null);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchInput, setSearchInput] = useState('');
@@ -14,6 +16,7 @@ function Header() {
   const { items: favorites } = useFavoritesStore();
   const { addRecentSearch } = useSearchStore();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleSearch = (e) => {
     if (e.key === 'Enter' && searchInput.trim()) {
@@ -31,10 +34,47 @@ function Header() {
     }
   };
 
-  useEffect(() => {
+  // Fonction pour charger l'état utilisateur
+  const loadUserState = () => {
     const loggedIn = localStorage.getItem('isLoggedIn') === 'true';
     setIsLoggedIn(loggedIn);
     
+    // Charger les infos utilisateur
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      try {
+        const userData = JSON.parse(storedUser);
+        setUser(userData);
+        // Vérifier si c'est un admin
+        const adminStatus = localStorage.getItem('isAdmin') === 'true' || 
+                            userData?.adminUser?.role === 'super_admin' || 
+                            userData?.adminUser?.role === 'admin';
+        setIsAdmin(adminStatus);
+      } catch (e) {
+        console.error('Erreur parsing user:', e);
+      }
+    } else {
+      setUser(null);
+      setIsAdmin(false);
+    }
+  };
+
+  // Recharger l'état à chaque changement de route
+  useEffect(() => {
+    loadUserState();
+  }, [location.pathname]);
+
+  // Écouter les événements de storage (pour les autres onglets)
+  useEffect(() => {
+    const handleStorageChange = () => {
+      loadUserState();
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+
+  useEffect(() => {
     // Vérifier le mode sombre au chargement
     const darkMode = localStorage.getItem('darkMode') === 'true' || 
                      (!localStorage.getItem('darkMode') && window.matchMedia('(prefers-color-scheme: dark)').matches);
@@ -208,6 +248,21 @@ function Header() {
             {/* Affichage conditionnel selon l'état de connexion */}
             {isLoggedIn ? (
               <>
+                {/* Bouton Admin Panel si l'utilisateur est admin */}
+                {isAdmin && (
+                  <Link to="/admin">
+                    <motion.button 
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="hidden sm:flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-sm font-bold transition-colors gap-2"
+                      title="Admin Panel"
+                    >
+                      <span className="material-symbols-outlined text-xl">admin_panel_settings</span>
+                      <span>Admin</span>
+                    </motion.button>
+                  </Link>
+                )}
+                
                 {/* Utilisateur connecté - Afficher le panier et profil */}
                 <button 
                   onClick={() => navigate('/profile')}

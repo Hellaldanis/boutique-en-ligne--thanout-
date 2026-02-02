@@ -1,13 +1,33 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ProductCard from '../components/ProductCard';
-import { products } from '../data/products';
+import { API_ENDPOINTS } from '../config/api';
 
 function Nouveautes() {
   const [sortBy, setSortBy] = useState('newest');
   const [viewMode, setViewMode] = useState('grid');
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchNewProducts = async () => {
+      try {
+        const response = await fetch(`${API_ENDPOINTS.PRODUCTS.LIST}?sortBy=newest`);
+        if (response.ok) {
+          const data = await response.json();
+          setProducts(data.products || data || []);
+        }
+      } catch (error) {
+        console.error('Erreur lors du chargement des nouveautés:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchNewProducts();
+  }, []);
 
   // Filter only new products
   const newProducts = useMemo(() => {
@@ -31,7 +51,7 @@ function Nouveautes() {
     }
 
     return filtered;
-  }, [sortBy]);
+  }, [sortBy, products]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">

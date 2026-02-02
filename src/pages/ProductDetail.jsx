@@ -1,25 +1,61 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ProductReviews from '../components/ProductReviews';
 import { useCartStore, useFavoritesStore } from '../store';
-import { products } from '../data/products';
+import { API_ENDPOINTS } from '../config/api';
 
 function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const product = products.find(p => p.id === parseInt(id));
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
   
   const [selectedImage, setSelectedImage] = useState(0);
-  const [selectedSize, setSelectedSize] = useState(product?.sizes?.[0] || null);
-  const [selectedColor, setSelectedColor] = useState(product?.colors?.[0] || null);
+  const [selectedSize, setSelectedSize] = useState(null);
+  const [selectedColor, setSelectedColor] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [showNotification, setShowNotification] = useState('');
 
   const { addItem } = useCartStore();
   const { toggleFavorite, isFavorite } = useFavoritesStore();
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const response = await fetch(`${API_ENDPOINTS.PRODUCTS.DETAIL(id)}`);
+        if (response.ok) {
+          const data = await response.json();
+          setProduct(data);
+          setSelectedSize(data.sizes?.[0] || null);
+          setSelectedColor(data.colors?.[0] || null);
+        } else {
+          setProduct(null);
+        }
+      } catch (error) {
+        console.error('Erreur lors du chargement du produit:', error);
+        setProduct(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProduct();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <>
+        <Header />
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        </div>
+        <Footer />
+      </>
+    );
+  }
 
   if (!product) {
     return (

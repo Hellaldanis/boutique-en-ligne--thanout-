@@ -1,13 +1,33 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ProductCard from '../components/ProductCard';
-import { products } from '../data/products';
+import { API_ENDPOINTS } from '../config/api';
 
 function Promotions() {
   const [sortBy, setSortBy] = useState('discount-desc');
   const [viewMode, setViewMode] = useState('grid');
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPromotions = async () => {
+      try {
+        const response = await fetch(`${API_ENDPOINTS.PRODUCTS.LIST}?onSale=true`);
+        if (response.ok) {
+          const data = await response.json();
+          setProducts(data.products || data || []);
+        }
+      } catch (error) {
+        console.error('Erreur lors du chargement des promotions:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPromotions();
+  }, []);
 
   // Filter only products with discount
   const promotionProducts = useMemo(() => {
@@ -31,7 +51,7 @@ function Promotions() {
     }
 
     return filtered;
-  }, [sortBy]);
+  }, [sortBy, products]);
 
   const totalSavings = promotionProducts.reduce((sum, product) => {
     if (product.oldPrice) {

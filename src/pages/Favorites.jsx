@@ -1,13 +1,56 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ProductCard from '../components/ProductCard';
 import { useFavoritesStore } from '../store';
+import { API_ENDPOINTS, getAuthHeaders } from '../config/api';
 
 function Favorites() {
   const { items: favorites, clearFavorites } = useFavoritesStore();
+  const [apiLoaded, setApiLoaded] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const token = localStorage.getItem('token');
+
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const response = await fetch(API_ENDPOINTS.FAVORITES.LIST, {
+          headers: getAuthHeaders()
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          // API favorites loaded successfully
+          setApiLoaded(true);
+        }
+      } catch (error) {
+        console.error('Erreur lors du chargement des favoris:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFavorites();
+  }, [token]);
+
+  if (loading) {
+    return (
+      <>
+        <Header />
+        <main className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-blue-900 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        </main>
+        <Footer />
+      </>
+    );
+  }
 
   return (
     <>

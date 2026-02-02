@@ -3,7 +3,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ProductCard from '../components/ProductCard';
-import { products } from '../data/products';
+import { API_ENDPOINTS } from '../config/api';
 
 function Search() {
   const [searchParams] = useSearchParams();
@@ -16,9 +16,31 @@ function Search() {
   const [sortBy, setSortBy] = useState('relevance');
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [showFilters, setShowFilters] = useState(false);
+  const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState(['all']);
+  const [loading, setLoading] = useState(true);
 
-  // Catégories disponibles
-  const categories = ['all', ...new Set(products.map(p => p.category))];
+  // Fetch products
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch(API_ENDPOINTS.PRODUCTS.LIST);
+        if (response.ok) {
+          const data = await response.json();
+          const productsData = data.products || data || [];
+          setProducts(productsData);
+          const uniqueCategories = ['all', ...new Set(productsData.map(p => p.category))];
+          setCategories(uniqueCategories);
+        }
+      } catch (error) {
+        console.error('Erreur lors du chargement des produits:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   useEffect(() => {
     let results = products;

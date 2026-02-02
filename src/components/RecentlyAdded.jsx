@@ -1,60 +1,45 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import ProductCard from './ProductCard';
-
-const recentProducts = [
-  {
-    id: 5,
-    name: 'Écouteurs Sans Fil Pro',
-    category: 'Électronique',
-    price: 18000,
-    oldPrice: 24000,
-    discount: 25,
-    image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300&h=400&fit=crop',
-    rating: 4.8,
-    reviews: 312,
-    tags: ['audio', 'bluetooth', 'premium'],
-    isNew: true
-  },
-  {
-    id: 6,
-    name: 'Veste en Jean Délavé',
-    category: 'Mode',
-    price: 8500,
-    image: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=300&h=400&fit=crop',
-    rating: 4.3,
-    reviews: 95,
-    tags: ['denim', 'vintage', 'casual'],
-    isNew: true
-  },
-  {
-    id: 7,
-    name: 'Smartphone Pro Max',
-    category: 'Électronique',
-    price: 85000,
-    image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=300&h=400&fit=crop',
-    rating: 4.9,
-    reviews: 421,
-    tags: ['technologie', '5G', 'premium'],
-    isNew: true
-  },
-  {
-    id: 8,
-    name: 'Lunettes de Soleil Polarisées',
-    category: 'Accessoires',
-    price: 6500,
-    oldPrice: 9000,
-    discount: 28,
-    image: 'https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=300&h=400&fit=crop',
-    rating: 4.6,
-    reviews: 178,
-    tags: ['protection', 'style', 'été'],
-    isNew: true
-  },
-];
+import { API_ENDPOINTS } from '../config/api';
 
 function RecentlyAdded() {
+  const [recentProducts, setRecentProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchRecentProducts = async () => {
+      try {
+        const response = await fetch(`${API_ENDPOINTS.PRODUCTS.LIST}?sortBy=newest&limit=8`);
+        if (response.ok) {
+          const data = await response.json();
+          setRecentProducts(data.products || data || []);
+        }
+      } catch (error) {
+        console.error('Erreur lors du chargement des nouveautés:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRecentProducts();
+  }, []);
+
+  if (loading) {
+    return (
+      <section className="mt-12">
+        <div className="flex justify-center items-center py-20">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        </div>
+      </section>
+    );
+  }
+
+  if (recentProducts.length === 0) {
+    return null;
+  }
+
   return (
     <section className="mt-12">
       <div className="flex justify-between items-center mb-6">
@@ -76,7 +61,7 @@ function RecentlyAdded() {
         animate={{ opacity: 1 }}
         className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
       >
-        {recentProducts.map((product, index) => (
+        {recentProducts.slice(0, 4).map((product, index) => (
           <motion.div
             key={product.id}
             initial={{ opacity: 0, y: 20 }}

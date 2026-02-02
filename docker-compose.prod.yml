@@ -1,0 +1,63 @@
+# ================================
+# Docker Compose Production - Thanout
+# Optimisé pour le déploiement
+# ================================
+
+version: '3.8'
+
+services:
+  # ================================
+  # Backend API - Production
+  # ================================
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: thanout-backend-prod
+    restart: always
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=production
+      - PORT=5000
+      - DATABASE_URL=file:./dev.db
+      - JWT_SECRET=${JWT_SECRET:-thanout-prod-secret-change-me}
+      - JWT_EXPIRES_IN=1h
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET:-thanout-refresh-prod-secret}
+      - JWT_REFRESH_EXPIRES_IN=7d
+      - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost}
+    volumes:
+      - thanout-db-prod:/app/prisma
+    networks:
+      - thanout-network-prod
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ================================
+  # Frontend - Production Build + Nginx
+  # ================================
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    container_name: thanout-frontend-prod
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - VITE_API_URL=${API_URL:-http://localhost:5000/api}
+    depends_on:
+      - backend
+    networks:
+      - thanout-network-prod
+
+volumes:
+  thanout-db-prod:
+
+networks:
+  thanout-network-prod:
+    driver: bridge

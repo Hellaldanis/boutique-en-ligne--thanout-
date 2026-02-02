@@ -21,6 +21,14 @@ import MentionsLegales from './pages/MentionsLegales';
 import PolitiqueConfidentialite from './pages/PolitiqueConfidentialite';
 import ScrollToTop from './components/ScrollToTop';
 
+// Admin pages
+import AdminLayout from './components/AdminLayout';
+import Dashboard from './pages/admin/Dashboard';
+import AdminProducts from './pages/admin/AdminProducts';
+import ProductForm from './pages/admin/ProductForm';
+import AdminPromoCodes from './pages/admin/AdminPromoCodes';
+import AdminUsers from './pages/admin/AdminUsers';
+
 function App() {
   return (
     <Router>
@@ -45,6 +53,17 @@ function App() {
           <Route path="/cgv" element={<CGV />} />
           <Route path="/mentions-legales" element={<MentionsLegales />} />
           <Route path="/politique-confidentialite" element={<PolitiqueConfidentialite />} />
+          
+          {/* Admin Routes */}
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<Dashboard />} />
+            <Route path="products" element={<AdminProducts />} />
+            <Route path="products/new" element={<ProductForm />} />
+            <Route path="products/edit/:id" element={<ProductForm />} />
+            <Route path="promo-codes" element={<AdminPromoCodes />} />
+            <Route path="users" element={<AdminUsers />} />
+          </Route>
+          
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>

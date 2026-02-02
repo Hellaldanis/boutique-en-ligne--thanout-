@@ -4,7 +4,7 @@ import { useSearchParams } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ProductCard from '../components/ProductCard';
-import { products } from '../data/products';
+import { API_ENDPOINTS } from '../config/api';
 
 function Categories() {
   const [searchParams] = useSearchParams();
@@ -17,6 +17,38 @@ function Categories() {
   const [priceRange, setPriceRange] = useState([0, 50000]);
   const [sortBy, setSortBy] = useState('popular');
   const [viewMode, setViewMode] = useState('grid');
+  const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState(['Tous']);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch products and categories
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [productsRes, categoriesRes] = await Promise.all([
+          fetch(API_ENDPOINTS.PRODUCTS.LIST),
+          fetch(API_ENDPOINTS.CATEGORIES.LIST)
+        ]);
+
+        if (productsRes.ok) {
+          const productsData = await productsRes.json();
+          setProducts(productsData.products || productsData || []);
+        }
+
+        if (categoriesRes.ok) {
+          const categoriesData = await categoriesRes.json();
+          const categoryNames = categoriesData.map(cat => cat.name);
+          setCategories(['Tous', ...categoryNames]);
+        }
+      } catch (error) {
+        console.error('Erreur lors du chargement:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   // Update selected category when URL param changes
   useEffect(() => {
@@ -36,8 +68,6 @@ function Categories() {
       setSelectedCategory(mappedCategory);
     }
   }, [initialCategory]);
-
-  const categories = ['Tous', ...new Set(products.map(p => p.category))];
 
   const filteredProducts = useMemo(() => {
     let filtered = products.filter(product => {

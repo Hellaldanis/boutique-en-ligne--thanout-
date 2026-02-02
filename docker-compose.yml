@@ -1,0 +1,82 @@
+# ================================
+# Docker Compose - Thanout E-commerce
+# Frontend + Backend + SQLite
+# ================================
+
+version: '3.8'
+
+services:
+  # ================================
+  # Backend API - Node.js + Express
+  # ================================
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: thanout-backend
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=development
+      - PORT=5000
+      - DATABASE_URL=file:./dev.db
+      - JWT_SECRET=thanout-super-secret-jwt-key-2024
+      - JWT_EXPIRES_IN=7d
+      - JWT_REFRESH_SECRET=thanout-refresh-secret-key-2024
+      - JWT_REFRESH_EXPIRES_IN=30d
+      - CORS_ORIGIN=http://localhost:5173
+    volumes:
+      # Persister la base de données SQLite
+      - thanout-db:/app/prisma
+      # Hot reload pour le développement (optionnel)
+      - ./backend/src:/app/src:ro
+    networks:
+      - thanout-network
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # ================================
+  # Frontend - React + Vite
+  # ================================
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: thanout-frontend
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:5000/api
+      - NODE_ENV=development
+    volumes:
+      # Hot reload pour le développement
+      - ./src:/app/src
+      - ./public:/app/public
+      - ./index.html:/app/index.html
+      # Exclure node_modules du bind mount
+      - /app/node_modules
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - thanout-network
+
+# ================================
+# Volumes persistants
+# ================================
+volumes:
+  thanout-db:
+    driver: local
+
+# ================================
+# Réseau interne
+# ================================
+networks:
+  thanout-network:
+    driver: bridge

@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { useCartStore, useOrderStore } from '../store';
+import { API_ENDPOINTS, getAuthHeaders } from '../config/api';
 
 function Checkout() {
   const { items, getTotal, clearCart } = useCartStore();
@@ -30,14 +31,7 @@ function Checkout() {
   const [promoCode, setPromoCode] = useState('');
   const [appliedPromo, setAppliedPromo] = useState(null);
   const [promoError, setPromoError] = useState('');
-
-  // Available promo codes
-  const promoCodes = {
-    'WELCOME10': { type: 'percentage', value: 10, description: 'Réduction de 10%' },
-    'THANOUT20': { type: 'percentage', value: 20, description: 'Réduction de 20%' },
-    'SAVE5000': { type: 'fixed', value: 5000, description: 'Réduction de 5000 CFA' },
-    'FREESHIP': { type: 'shipping', value: 0, description: 'Livraison gratuite' }
-  };
+  const [promoLoading, setPromoLoading] = useState(false);
 
   const wilayas = [
     'Alger', 'Oran', 'Constantine', 'Annaba', 'Blida', 'Batna', 'Djelfa', 
@@ -48,14 +42,38 @@ function Checkout() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
   
-  const handleApplyPromo = () => {
+  const handleApplyPromo = async () => {
     const code = promoCode.toUpperCase().trim();
-    if (promoCodes[code]) {
-      setAppliedPromo({ code, ...promoCodes[code] });
-      setPromoError('');
-    } else {
-      setPromoError('Code promo invalide');
+    if (!code) return;
+
+    setPromoLoading(true);
+    setPromoError('');
+
+    try {
+      const response = await fetch(`${API_ENDPOINTS.PROMO_CODES.VALIDATE(code)}`, {
+        headers: getAuthHeaders()
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setAppliedPromo({
+          code: data.code,
+          type: data.discountType,
+          value: data.discountValue,
+          description: data.description
+        });
+        setPromoError('');
+      } else {
+        const error = await response.json();
+        setPromoError(error.message || 'Code promo invalide');
+        setAppliedPromo(null);
+      }
+    } catch (error) {
+      console.error('Erreur:', error);
+      setPromoError('Erreur lors de la validation du code promo');
       setAppliedPromo(null);
+    } finally {
+      setPromoLoading(false);
     }
   };
   
@@ -87,7 +105,7 @@ function Checkout() {
     return baseShipping;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     // Check if account is suspended before processing
@@ -101,18 +119,25 @@ function Checkout() {
     const discount = calculateDiscount();
     const total = subtotal + shipping - discount;
 
-    // Create order object
+    // Create order data
     const orderData = {
-      items: items,
-      subtotal: subtotal,
-      shipping: shipping,
-      discount: discount,
-      total: total,
-      promoCode: appliedPromo ? appliedPromo.code : null,
+      items: items.map(item => ({
+        productId: item.id,
+        quantity: item.quantity,
+        price: item.price,
+        selectedSize: item.selectedSize,
+        selectedColor: item.selectedColor
+      })),
+      subtotal,
+      shipping,
+      discount,
+      total,
+      promoCodeId: appliedPromo ? appliedPromo.id : null,
       paymentMethod: formData.paymentMethod,
-      email: formData.email,
       shippingAddress: {
-        fullName: `${formData.firstName} ${formData.lastName}`,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
         phone: formData.phone,
         address: formData.address,
         city: formData.city,
@@ -121,25 +146,41 @@ function Checkout() {
       }
     };
 
-    // Add order to store
-    const newOrder = addOrder(orderData);
+    try {
+      const response = await fetch(API_ENDPOINTS.ORDERS.CREATE, {
+        method: 'POST',
+        headers: {
+          ...getAuthHeaders(),
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(orderData)
+      });
 
-    // Save to purchase history (for backward compatibility)
-    const history = JSON.parse(localStorage.getItem('purchaseHistory') || '[]');
-    localStorage.setItem('purchaseHistory', JSON.stringify([{
-      id: newOrder.id,
-      date: newOrder.date,
-      items: items,
-      total: total,
-      status: 'En cours',
-      shippingAddress: formData
-    }, ...history]));
+      if (response.ok) {
+        const data = await response.json();
+        const newOrder = data.order || data;
 
-    // Clear cart
-    clearCart();
-    
-    // Redirect to order confirmation page
-    navigate(`/order-confirmation/${newOrder.id}`);
+        // Add order to local store for backward compatibility
+        addOrder({
+          ...orderData,
+          id: newOrder.id,
+          date: newOrder.createdAt || new Date().toISOString(),
+          status: newOrder.status || 'pending'
+        });
+
+        // Clear cart
+        clearCart();
+        
+        // Redirect to order confirmation
+        navigate(`/order-confirmation/${newOrder.id}`);
+      } else {
+        const error = await response.json();
+        alert(error.message || 'Erreur lors de la création de la commande');
+      }
+    } catch (error) {
+      console.error('Erreur:', error);
+      alert('Erreur lors de la création de la commande. Veuillez réessayer.');
+    }
   };
 
   if (items.length === 0) {

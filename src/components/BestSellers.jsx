@@ -1,58 +1,45 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import ProductCard from './ProductCard';
-
-const bestSellers = [
-  {
-    id: 3,
-    name: 'T-Shirt Essentiel Cotton Bio',
-    category: 'Mode',
-    price: 4000,
-    image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=300&h=400&fit=crop',
-    rating: 4,
-    reviews: 203,
-    tags: ['basique', 'confortable', 'bio'],
-    bestseller: true
-  },
-  {
-    id: 1,
-    name: 'Baskets Urbaines Premium',
-    category: 'Chaussures',
-    price: 15000,
-    oldPrice: 20000,
-    discount: 25,
-    image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=300&h=400&fit=crop',
-    rating: 4.5,
-    reviews: 128,
-    tags: ['sport', 'casual', 'confort'],
-    bestseller: true
-  },
-  {
-    id: 4,
-    name: 'Montre Classique Automatique',
-    category: 'Accessoires',
-    price: 25000,
-    image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300&h=400&fit=crop',
-    rating: 4.5,
-    reviews: 156,
-    tags: ['élégant', 'automatique', 'classique'],
-    bestseller: true
-  },
-  {
-    id: 2,
-    name: 'Sac à Main en Cuir Véritable',
-    category: 'Accessoires',
-    price: 32000,
-    image: 'https://images.unsplash.com/photo-1590874103328-eac38a683ce7?w=300&h=400&fit=crop',
-    rating: 5,
-    reviews: 89,
-    tags: ['luxe', 'élégant', 'cuir'],
-    bestseller: true
-  },
-];
+import { API_ENDPOINTS } from '../config/api';
 
 function BestSellers() {
+  const [bestSellers, setBestSellers] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchBestSellers = async () => {
+      try {
+        const response = await fetch(`${API_ENDPOINTS.PRODUCTS.LIST}?sortBy=popular&limit=8`);
+        if (response.ok) {
+          const data = await response.json();
+          setBestSellers(data.products || data || []);
+        }
+      } catch (error) {
+        console.error('Erreur lors du chargement des meilleures ventes:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBestSellers();
+  }, []);
+
+  if (loading) {
+    return (
+      <section className="mt-12">
+        <div className="flex justify-center items-center py-20">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        </div>
+      </section>
+    );
+  }
+
+  if (bestSellers.length === 0) {
+    return null;
+  }
+
   return (
     <section className="mt-12">
       <div className="flex justify-between items-center mb-6">
@@ -74,7 +61,7 @@ function BestSellers() {
         animate={{ opacity: 1 }}
         className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
       >
-        {bestSellers.map((product, index) => (
+        {bestSellers.slice(0, 4).map((product, index) => (
           <motion.div
             key={product.id}
             initial={{ opacity: 0, y: 20 }}

@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import { API_ENDPOINTS } from '../config/api';
 
 function SignUp() {
   const navigate = useNavigate();
@@ -21,7 +22,7 @@ function SignUp() {
     setFormData({ ...formData, [e.target.name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     if (formData.password !== formData.confirmPassword) {
@@ -34,15 +35,48 @@ function SignUp() {
       return;
     }
 
-    // Simulation d'inscription
-    localStorage.setItem('user', JSON.stringify({ 
-      email: formData.email, 
-      name: `${formData.firstName} ${formData.lastName}`,
-      phone: formData.phone
-    }));
-    localStorage.setItem('isLoggedIn', 'true');
-    alert('Inscription réussie ! Bienvenue sur Thanout 🎉');
-    navigate('/');
+    try {
+      // Préparer les données (exclure phone si vide)
+      const registerData = {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        password: formData.password
+      };
+      
+      // Ajouter le téléphone seulement s'il est renseigné
+      if (formData.phone && formData.phone.trim()) {
+        registerData.phone = formData.phone.trim();
+      }
+
+      const response = await fetch(API_ENDPOINTS.AUTH.REGISTER, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(registerData)
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.message || 'Erreur lors de l\'inscription');
+        return;
+      }
+
+      // Stocker le token et les infos utilisateur
+      const token = data.accessToken || data.token;
+      localStorage.setItem('token', token);
+      localStorage.setItem('accessToken', token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+      localStorage.setItem('isLoggedIn', 'true');
+      
+      alert('Inscription réussie ! Bienvenue sur Thanout 🎉');
+      navigate('/');
+    } catch (error) {
+      console.error('Erreur:', error);
+      alert('Erreur lors de l\'inscription. Veuillez réessayer.');
+    }
   };
 
   const handleGoogleLogin = () => {

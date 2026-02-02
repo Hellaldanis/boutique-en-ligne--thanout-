@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import { API_ENDPOINTS } from '../config/api';
 
 function Login() {
   const navigate = useNavigate();
@@ -17,13 +18,51 @@ function Login() {
     setFormData({ ...formData, [e.target.name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Simulation de connexion
-    localStorage.setItem('user', JSON.stringify({ email: formData.email, name: formData.email.split('@')[0] }));
-    localStorage.setItem('isLoggedIn', 'true');
-    alert('Connexion réussie !');
-    navigate('/');
+    
+    try {
+      const response = await fetch(API_ENDPOINTS.AUTH.LOGIN, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.message || 'Erreur de connexion');
+        return;
+      }
+
+      // Stocker le token et les infos utilisateur
+      const token = data.accessToken || data.token;
+      localStorage.setItem('token', token);
+      localStorage.setItem('accessToken', token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+      localStorage.setItem('isLoggedIn', 'true');
+      
+      // Vérifier si c'est un admin
+      const isAdmin = data.user?.adminUser?.role === 'super_admin' || data.user?.adminUser?.role === 'admin';
+      localStorage.setItem('isAdmin', isAdmin ? 'true' : 'false');
+      
+      alert('Connexion réussie !');
+      
+      // Rediriger vers le dashboard admin si c'est un admin
+      if (isAdmin) {
+        navigate('/admin');
+      } else {
+        navigate('/');
+      }
+    } catch (error) {
+      console.error('Erreur:', error);
+      alert('Erreur lors de la connexion. Veuillez réessayer.');
+    }
   };
 
   const handleGoogleLogin = () => {
