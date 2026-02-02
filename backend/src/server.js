@@ -30,13 +30,14 @@ BigInt.prototype.toJSON = function() {
   return this.toString();
 };
 
-// Configuration CORS - accepte plusieurs origines de dev
+// Configuration CORS - accepte plusieurs origines de dev + production
 const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:3001',
   'http://localhost:3002',
   'http://localhost:5173',
   'http://localhost:5174',
+  'https://friendly-treacle-996e76.netlify.app',
   process.env.CORS_ORIGIN
 ].filter(Boolean);
 
