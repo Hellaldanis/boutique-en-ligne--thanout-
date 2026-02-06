@@ -3,18 +3,11 @@
   command = "npm run build"
   publish = "dist"
 
+[build.environment]
+  NODE_VERSION = "18"
+  VITE_API_URL = "https://boutique-en-ligne-thanout.onrender.com/api"
+
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
-
-[build.environment]
-  NODE_VERSION = "18"
-
-# Production context – points to Render backend
-[context.production.environment]
-  VITE_API_URL = "https://boutique-en-ligne-thanout.onrender.com/api"
-
-# Deploy preview context
-[context.deploy-preview.environment]
-  VITE_API_URL = "https://boutique-en-ligne-thanout.onrender.com/api"
