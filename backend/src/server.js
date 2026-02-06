@@ -36,6 +36,7 @@ const allowedOrigins = [
   'http://localhost:3002',
   'http://localhost:5173',
   'http://localhost:5174',
+  'https://friendly-treacle-996e76.netlify.app',
   process.env.FRONTEND_URL,
   process.env.CORS_ORIGIN
 ].filter(Boolean);
