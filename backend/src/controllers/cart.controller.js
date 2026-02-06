@@ -1,12 +1,21 @@
 const cartService = require('../services/cart.service');
 
+// Get session ID for guest carts from request header
+function getSessionId(req) {
+  return req.get('x-session-id') || null;
+}
+
 class CartController {
   // Obtenir le panier
   async getCart(req, res, next) {
     try {
       const userId = req.user?.id;
-      const sessionId = req.sessionID || req.get('x-session-id');
+      const sessionId = getSessionId(req);
       
+      if (!userId && !sessionId) {
+        return res.json({ items: [], itemCount: 0, total: 0 });
+      }
+
       const cart = await cartService.getOrCreateCart(userId, sessionId);
       res.json(cart);
     } catch (error) {
@@ -18,7 +27,7 @@ class CartController {
   async addItem(req, res, next) {
     try {
       const userId = req.user?.id;
-      const sessionId = req.sessionID || req.get('x-session-id');
+      const sessionId = getSessionId(req);
       
       const cart = await cartService.addItem(userId, sessionId, req.body);
       res.status(201).json({
@@ -34,7 +43,7 @@ class CartController {
   async updateItem(req, res, next) {
     try {
       const userId = req.user?.id;
-      const sessionId = req.sessionID || req.get('x-session-id');
+      const sessionId = getSessionId(req);
       const { itemId } = req.params;
       const { quantity } = req.body;
       
@@ -52,7 +61,7 @@ class CartController {
   async removeItem(req, res, next) {
     try {
       const userId = req.user?.id;
-      const sessionId = req.sessionID || req.get('x-session-id');
+      const sessionId = getSessionId(req);
       const { itemId } = req.params;
       
       const cart = await cartService.removeItem(userId, sessionId, itemId);
@@ -69,7 +78,7 @@ class CartController {
   async clearCart(req, res, next) {
     try {
       const userId = req.user?.id;
-      const sessionId = req.sessionID || req.get('x-session-id');
+      const sessionId = getSessionId(req);
       
       const cart = await cartService.clearCart(userId, sessionId);
       res.json({

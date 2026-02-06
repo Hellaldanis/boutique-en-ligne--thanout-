@@ -9,6 +9,14 @@ function ProductCard({ product }) {
   const { toggleFavorite, isFavorite } = useFavoritesStore();
   const [showAddedNotification, setShowAddedNotification] = React.useState(false);
 
+  if (!product) {
+    return null;
+  }
+
+  const displayImage = product.image;
+  const roundedRating = Math.round(product.rating || 0);
+  const reviewCount = product.reviews || product.reviewCount || 0;
+
   const handleAddToCart = () => {
     addItem(product);
     setShowAddedNotification(true);
@@ -53,7 +61,7 @@ function ProductCard({ product }) {
       <div className="relative overflow-hidden">
         <motion.img 
           className="w-full h-64 object-cover" 
-          src={product.image} 
+          src={displayImage}
           alt={product.name}
           whileHover={{ scale: 1.1 }}
           transition={{ duration: 0.3 }}
@@ -61,7 +69,7 @@ function ProductCard({ product }) {
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
         
         {/* Badge réduction */}
-        {product.discount && (
+        {product.discount > 0 && (
           <motion.div 
             className="absolute top-2 left-2 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold"
             initial={{ scale: 0 }}
@@ -120,20 +128,24 @@ function ProductCard({ product }) {
           {product.name}
         </h3>
         <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-          {product.category}
+          {product.category || 'Sans catégorie'}
         </p>
         
         {/* Note */}
-        {product.rating && (
+        {roundedRating > 0 && (
           <div className="flex items-center gap-1 mt-2">
             <div className="flex text-yellow-400">
               {[...Array(5)].map((_, i) => (
-                <span key={i} className="material-symbols-outlined text-sm" style={{ fontVariationSettings: i < product.rating ? "'FILL' 1" : "'FILL' 0" }}>
+                <span
+                  key={i}
+                  className="material-symbols-outlined text-sm"
+                  style={{ fontVariationSettings: i < roundedRating ? "'FILL' 1" : "'FILL' 0" }}
+                >
                   star
                 </span>
               ))}
             </div>
-            <span className="text-xs text-gray-500 ml-1">({product.reviews || 0})</span>
+            <span className="text-xs text-gray-500 ml-1">({reviewCount})</span>
           </div>
         )}
 

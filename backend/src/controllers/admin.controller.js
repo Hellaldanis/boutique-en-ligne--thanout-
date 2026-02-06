@@ -49,7 +49,7 @@ class AdminController {
       const { accountSuspended, suspensionReason } = req.body;
 
       const user = await adminService.updateUserStatus(
-        id,
+        parseInt(id),
         accountSuspended,
         suspensionReason
       );
@@ -59,7 +59,7 @@ class AdminController {
         req.user.adminId,
         accountSuspended ? 'ban_user' : 'unban_user',
         'user',
-        id,
+        parseInt(id),
         { reason: suspensionReason }
       );
 
@@ -83,14 +83,14 @@ class AdminController {
         return res.status(400).json({ message: 'Rôle invalide' });
       }
 
-      await adminService.updateUserRole(id, role);
+      await adminService.updateUserRole(parseInt(id), role);
 
       // Log activity
       await adminService.logActivity(
         req.user.adminId,
         'update_user_role',
         'user',
-        id,
+        parseInt(id),
         { newRole: role }
       );
 
@@ -145,14 +145,14 @@ class AdminController {
   async updatePromoCode(req, res) {
     try {
       const { id } = req.params;
-      const promoCode = await adminService.updatePromoCode(id, req.body);
+      const promoCode = await adminService.updatePromoCode(parseInt(id), req.body);
 
       // Log activity
       await adminService.logActivity(
         req.user.adminId,
         'update_promo_code',
         'promo_code',
-        id,
+        parseInt(id),
         { code: promoCode.code }
       );
 
@@ -173,14 +173,14 @@ class AdminController {
   async deletePromoCode(req, res) {
     try {
       const { id } = req.params;
-      await adminService.deletePromoCode(id);
+      await adminService.deletePromoCode(parseInt(id));
 
       // Log activity
       await adminService.logActivity(
         req.user.adminId,
         'delete_promo_code',
         'promo_code',
-        id
+        parseInt(id)
       );
 
       res.json({ message: 'Code promo supprimé avec succès' });

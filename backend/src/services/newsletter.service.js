@@ -1,7 +1,5 @@
-const { PrismaClient } = require('@prisma/client');
+const prisma = require('../lib/prisma');
 const crypto = require('crypto');
-
-const prisma = new PrismaClient();
 
 class NewsletterService {
   // S'abonner à la newsletter

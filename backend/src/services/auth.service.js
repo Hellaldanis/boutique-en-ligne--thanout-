@@ -1,9 +1,7 @@
-const { PrismaClient } = require('@prisma/client');
+const prisma = require('../lib/prisma');
 const { hashPassword, comparePassword } = require('../utils/password');
-const { generateTokens } = require('../utils/jwt');
+const { generateTokens, verifyRefreshToken } = require('../utils/jwt');
 const crypto = require('crypto');
-
-const prisma = new PrismaClient();
 
 class AuthService {
   // Inscription
@@ -241,11 +239,45 @@ class AuthService {
     return user;
   }
 
+  // Refresh access token using refresh token
+  async refreshToken(refreshToken) {
+    if (!refreshToken) {
+      throw new Error('Refresh token manquant');
+    }
+
+    const decoded = verifyRefreshToken(refreshToken);
+
+    const user = await prisma.user.findUnique({
+      where: { id: decoded.userId },
+      select: {
+        id: true,
+        isActive: true,
+        accountSuspended: true
+      }
+    });
+
+    if (!user || !user.isActive || user.accountSuspended) {
+      throw new Error('Utilisateur non autorisé');
+    }
+
+    const tokens = generateTokens(user.id);
+    return tokens;
+  }
+
   // Mettre à jour le profil
   async updateProfile(userId, updateData) {
+    // Whitelist allowed fields to prevent mass-assignment
+    const allowedFields = ['firstName', 'lastName', 'phone', 'dateOfBirth', 'avatarUrl'];
+    const sanitizedData = {};
+    for (const field of allowedFields) {
+      if (updateData[field] !== undefined) {
+        sanitizedData[field] = updateData[field];
+      }
+    }
+
     const user = await prisma.user.update({
       where: { id: userId },
-      data: updateData,
+      data: sanitizedData,
       select: {
         id: true,
         email: true,

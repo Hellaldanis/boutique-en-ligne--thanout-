@@ -4,9 +4,9 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
-const { PrismaClient } = require('@prisma/client');
 
 const { errorHandler, notFound, logger } = require('./middlewares/errorHandler.middleware');
+const prisma = require('./lib/prisma');
 const { generalLimiter } = require('./middlewares/rateLimiter.middleware');
 
 // Import des routes
@@ -23,7 +23,6 @@ const adminRoutes = require('./routes/admin.routes');
 const promoRoutes = require('./routes/promo.routes');
 
 const app = express();
-const prisma = new PrismaClient();
 
 // Fix pour la sérialisation BigInt en JSON
 BigInt.prototype.toJSON = function() {
@@ -37,7 +36,7 @@ const allowedOrigins = [
   'http://localhost:3002',
   'http://localhost:5173',
   'http://localhost:5174',
-  'https://friendly-treacle-996e76.netlify.app',
+  process.env.FRONTEND_URL,
   process.env.CORS_ORIGIN
 ].filter(Boolean);
 
@@ -47,6 +46,7 @@ const corsOptions = {
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
+      console.warn(`CORS blocked origin: ${origin}`);
       callback(new Error('Non autorisé par CORS'));
     }
   },

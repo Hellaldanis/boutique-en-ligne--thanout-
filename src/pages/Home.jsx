@@ -1,6 +1,8 @@
 import React from 'react';
 import Header from '../components/Header';
 import HeroSlider from '../components/HeroSlider';
+import CategoriesSection from '../components/CategoriesSection';
+import ProductsSection from '../components/ProductsSection';
 import RecentlyAdded from '../components/RecentlyAdded';
 import BestSellers from '../components/BestSellers';
 import Footer from '../components/Footer';
@@ -30,8 +32,10 @@ function Home() {
       <Header />
       <main className="relative flex-1 px-4 sm:px-6 lg:px-10 py-4">
         <HeroSlider />
+        <CategoriesSection />
         <RecentlyAdded />
         <BestSellers />
+        <ProductsSection />
       </main>
       <Footer />
     </div>

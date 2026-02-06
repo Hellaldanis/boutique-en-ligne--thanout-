@@ -1,0 +1,35 @@
+# Render Blueprint – Thanout E-commerce Platform
+# https://render.com/docs/blueprint-spec
+
+databases:
+  - name: thanout-db
+    plan: free
+    databaseName: thanout
+    user: thanout
+
+services:
+  - type: web
+    name: thanout-api
+    runtime: node
+    plan: free
+    rootDir: backend
+    buildCommand: npm ci && npx prisma generate && npx prisma db push
+    startCommand: node src/server.js
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: thanout-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: FRONTEND_URL
+        sync: false          # Set this manually to your Netlify URL
+      - key: CORS_ORIGIN
+        sync: false          # Set same as FRONTEND_URL
+      - key: PORT
+        value: 5000

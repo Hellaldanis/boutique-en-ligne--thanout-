@@ -1,7 +1,5 @@
 const jwt = require('jsonwebtoken');
-const { PrismaClient } = require('@prisma/client');
-
-const prisma = new PrismaClient();
+const prisma = require('../lib/prisma');
 
 const authenticateToken = async (req, res, next) => {
   try {
@@ -47,12 +45,6 @@ const authenticateToken = async (req, res, next) => {
     if (user.accountSuspended) {
       return res.status(403).json({ error: 'Compte suspendu' });
     }
-
-    // Mettre à jour la dernière connexion
-    await prisma.user.update({
-      where: { id: user.id },
-      data: { lastLogin: new Date() }
-    });
 
     req.user = user;
     next();

@@ -6,6 +6,7 @@ import Footer from '../components/Footer';
 import ProductReviews from '../components/ProductReviews';
 import { useCartStore, useFavoritesStore, useAuthStore } from '../store';
 import { API_ENDPOINTS } from '../config/api';
+import { normalizeProduct } from '../utils/product';
 
 function ProductDetail() {
   const { id } = useParams();
@@ -29,9 +30,10 @@ function ProductDetail() {
         const response = await fetch(`${API_ENDPOINTS.PRODUCTS.DETAIL(id)}`);
         if (response.ok) {
           const data = await response.json();
-          setProduct(data);
-          setSelectedSize(data.sizes?.[0] || null);
-          setSelectedColor(data.colors?.[0] || null);
+          const normalized = normalizeProduct(data);
+          setProduct(normalized);
+          setSelectedSize(normalized.sizes?.[0] || null);
+          setSelectedColor(normalized.colors?.[0] || null);
         } else {
           setProduct(null);
         }
@@ -74,10 +76,17 @@ function ProductDetail() {
   }
 
   // Ensure arrays exist to prevent errors if data is missing
-  const images = product.images || [product.image];
+  const imageList = Array.isArray(product.images) && product.images.length > 0
+    ? product.images.map((img) => img.imageUrl || img.url || img)
+    : [product.image];
+  const images = imageList.length > 0 ? imageList : [product.image];
   const sizes = product.sizes || [];
   const colors = product.colors || [];
   const features = product.features || [];
+  const stockQuantity = product.stock ?? product.stockQuantity ?? 0;
+  const averageRating = Math.round(product.averageRating || product.rating || 0);
+  const reviewCount = product.reviewCount || product.reviews || 0;
+  const discountValue = product.discount ?? product.discountPercentage;
 
   const handleAddToCart = () => {
     addItem({ ...product, selectedSize, selectedColor, quantity });
@@ -148,9 +157,9 @@ function ProductDetail() {
                 alt={product.name}
                 className="w-full h-full object-cover"
               />
-              {product.discount && (
+              {discountValue > 0 && (
                 <div className="absolute top-4 left-4 bg-red-500 text-white px-4 py-2 rounded-full text-sm font-bold">
-                  -{product.discount}%
+                  -{discountValue}%
                 </div>
               )}
             </motion.div>
@@ -185,20 +194,26 @@ function ProductDetail() {
             </h1>
 
             {/* Rating */}
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-1">
-                <div className="flex text-yellow-400">
-                  {[...Array(5)].map((_, i) => (
-                    <span key={i} className="material-symbols-outlined" style={{ fontVariationSettings: i < product.rating ? "'FILL' 1" : "'FILL' 0" }}>
-                      star
-                    </span>
-                  ))}
+            {averageRating > 0 && (
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-1">
+                  <div className="flex text-yellow-400">
+                    {[...Array(5)].map((_, i) => (
+                      <span
+                        key={i}
+                        className="material-symbols-outlined"
+                        style={{ fontVariationSettings: i < averageRating ? "'FILL' 1" : "'FILL' 0" }}
+                      >
+                        star
+                      </span>
+                    ))}
+                  </div>
+                  <span className="text-gray-600 dark:text-gray-400 ml-2">
+                    {averageRating} ({reviewCount} avis)
+                  </span>
                 </div>
-                <span className="text-gray-600 dark:text-gray-400 ml-2">
-                  {product.rating} ({product.reviews} avis)
-                </span>
               </div>
-            </div>
+            )}
 
             {/* Price */}
             <div className="flex items-baseline gap-4">
@@ -296,7 +311,7 @@ function ProductDetail() {
                   </button>
                 </div>
                 <p className="text-sm text-gray-500">
-                  {product.stock} en stock
+                  {stockQuantity} en stock
                 </p>
               </div>
             </div>

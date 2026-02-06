@@ -24,7 +24,7 @@ class AuthController {
       res.cookie('refreshToken', result.refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
         maxAge: 7 * 24 * 60 * 60 * 1000 // 7 jours
       });
 
@@ -43,6 +43,28 @@ class AuthController {
     try {
       res.clearCookie('refreshToken');
       res.json({ message: 'Déconnexion réussie' });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // Rafraîchir le token d'accès
+  async refreshToken(req, res, next) {
+    try {
+      const refreshToken = req.cookies.refreshToken || req.body.refreshToken;
+      const tokens = await authService.refreshToken(refreshToken);
+
+      // Mettre à jour le cookie refresh token
+      res.cookie('refreshToken', tokens.refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
+        maxAge: 7 * 24 * 60 * 60 * 1000
+      });
+
+      res.json({
+        accessToken: tokens.accessToken
+      });
     } catch (error) {
       next(error);
     }

@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ProductCard from '../components/ProductCard';
 import { API_ENDPOINTS } from '../config/api';
+import { getNormalizedProductArray } from '../utils/product';
 
 function Search() {
   const [searchParams] = useSearchParams();
@@ -14,80 +15,104 @@ function Search() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [priceRange, setPriceRange] = useState([0, 50000]);
   const [sortBy, setSortBy] = useState('relevance');
-  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [results, setResults] = useState([]);
   const [showFilters, setShowFilters] = useState(false);
-  const [products, setProducts] = useState([]);
-  const [categories, setCategories] = useState(['all']);
+  const [categories, setCategories] = useState([{ id: 'all', name: 'Toutes les catégories' }]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [pagination, setPagination] = useState(null);
+  const [page, setPage] = useState(1);
 
-  // Fetch products
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await fetch(API_ENDPOINTS.PRODUCTS.LIST);
-        if (response.ok) {
-          const data = await response.json();
-          const productsData = data.products || data || [];
-          setProducts(productsData);
-          const uniqueCategories = ['all', ...new Set(productsData.map(p => p.category))];
-          setCategories(uniqueCategories);
-        }
-      } catch (error) {
-        console.error('Erreur lors du chargement des produits:', error);
-      } finally {
-        setLoading(false);
+  const fetchCategories = useCallback(async () => {
+    try {
+      const response = await fetch(API_ENDPOINTS.CATEGORIES.LIST);
+      if (!response.ok) {
+        throw new Error('Impossible de charger les catégories');
       }
-    };
-
-    fetchProducts();
+      const data = await response.json();
+      const formatted = Array.isArray(data)
+        ? data.map((cat) => ({ id: String(cat.id), name: cat.name }))
+        : [];
+      setCategories([{ id: 'all', name: 'Toutes les catégories' }, ...formatted]);
+    } catch (err) {
+      console.error('Erreur catégories recherche:', err);
+    }
   }, []);
 
-  useEffect(() => {
-    let results = products;
-
-    // Filtre par recherche
-    if (searchQuery.trim()) {
-      results = results.filter(product =>
-        product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        product.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        product.category.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-
-    // Filtre par catégorie
-    if (selectedCategory !== 'all') {
-      results = results.filter(product => product.category === selectedCategory);
-    }
-
-    // Filtre par prix
-    results = results.filter(
-      product => product.price >= priceRange[0] && product.price <= priceRange[1]
-    );
-
-    // Tri
+  const mapSortParams = useCallback(() => {
     switch (sortBy) {
       case 'price-asc':
-        results.sort((a, b) => a.price - b.price);
-        break;
+        return { field: 'price', order: 'asc' };
       case 'price-desc':
-        results.sort((a, b) => b.price - a.price);
-        break;
+        return { field: 'price', order: 'desc' };
       case 'name':
-        results.sort((a, b) => a.name.localeCompare(b.name));
-        break;
+        return { field: 'name', order: 'asc' };
       case 'newest':
-        results.sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0));
-        break;
+        return { field: 'createdAt', order: 'desc' };
       default:
-        // relevance - garde l'ordre par défaut
-        break;
+        return { field: 'viewCount', order: 'desc' };
     }
+  }, [sortBy]);
 
-    setFilteredProducts(results);
-  }, [searchQuery, selectedCategory, priceRange, sortBy]);
+  const fetchProducts = useCallback(async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const params = new URLSearchParams();
+      params.set('limit', '24');
+      params.set('page', String(page));
+      if (searchQuery.trim()) {
+        params.set('search', searchQuery.trim());
+      }
+      if (selectedCategory !== 'all') {
+        params.set('categoryId', String(selectedCategory));
+      }
+      if (priceRange[0] > 0) {
+        params.set('minPrice', String(priceRange[0]));
+      }
+      if (priceRange[1] < 50000) {
+        params.set('maxPrice', String(priceRange[1]));
+      }
+
+      const { field, order } = mapSortParams();
+      params.set('sortBy', field);
+      params.set('sortOrder', order);
+
+      const response = await fetch(`${API_ENDPOINTS.PRODUCTS.LIST}?${params.toString()}`);
+      if (!response.ok) {
+        const errBody = await response.json().catch(() => ({}));
+        throw new Error(errBody.message || 'Impossible de charger les produits');
+      }
+
+      const data = await response.json();
+      setResults(getNormalizedProductArray(data));
+      setPagination(data?.pagination || null);
+    } catch (err) {
+      console.error('Erreur recherche produits:', err);
+      setError(err.message || 'Impossible de charger les produits');
+      setResults([]);
+      setPagination(null);
+    } finally {
+      setLoading(false);
+    }
+  }, [searchQuery, selectedCategory, priceRange, mapSortParams, page]);
+
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
+
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
+
+  useEffect(() => {
+    setSearchQuery(queryParam);
+    setPage(1);
+  }, [queryParam]);
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
+    setPage(1);
     navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
   };
 
@@ -95,6 +120,7 @@ function Search() {
     setSelectedCategory('all');
     setPriceRange([0, 50000]);
     setSortBy('relevance');
+    setPage(1);
   };
 
   return (
@@ -109,7 +135,10 @@ function Search() {
               <input
                 type="text"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setPage(1);
+                }}
                 placeholder="Rechercher un produit..."
                 className="w-full px-4 sm:px-6 py-3 sm:py-4 text-base sm:text-lg rounded-full border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:border-primary focus:outline-none shadow-lg pr-16 sm:pr-32"
               />
@@ -141,7 +170,10 @@ function Search() {
           </button>
           <select
             value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
+            onChange={(e) => {
+              setSortBy(e.target.value);
+              setPage(1);
+            }}
             className="px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:outline-none focus:border-primary"
           >
             <option value="relevance">Pertinence</option>
@@ -171,12 +203,15 @@ function Search() {
                 <h3 className="font-semibold mb-3">Catégorie</h3>
                 <select
                   value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  onChange={(e) => {
+                    setSelectedCategory(e.target.value);
+                    setPage(1);
+                  }}
                   className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:outline-none focus:border-primary"
                 >
-                  {categories.map(cat => (
-                    <option key={cat} value={cat}>
-                      {cat === 'all' ? 'Toutes les catégories' : cat}
+                  {categories.map((cat) => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.name}
                     </option>
                   ))}
                 </select>
@@ -191,7 +226,10 @@ function Search() {
                     <input
                       type="number"
                       value={priceRange[0]}
-                      onChange={(e) => setPriceRange([Number(e.target.value), priceRange[1]])}
+                      onChange={(e) => {
+                        setPriceRange([Number(e.target.value), priceRange[1]]);
+                        setPage(1);
+                      }}
                       className="w-full px-3 py-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:outline-none focus:border-primary"
                     />
                   </div>
@@ -200,7 +238,10 @@ function Search() {
                     <input
                       type="number"
                       value={priceRange[1]}
-                      onChange={(e) => setPriceRange([priceRange[0], Number(e.target.value)])}
+                      onChange={(e) => {
+                        setPriceRange([priceRange[0], Number(e.target.value)]);
+                        setPage(1);
+                      }}
                       className="w-full px-3 py-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:outline-none focus:border-primary"
                     />
                   </div>
@@ -211,7 +252,10 @@ function Search() {
                       max="50000"
                       step="500"
                       value={priceRange[1]}
-                      onChange={(e) => setPriceRange([priceRange[0], Number(e.target.value)])}
+                      onChange={(e) => {
+                        setPriceRange([priceRange[0], Number(e.target.value)]);
+                        setPage(1);
+                      }}
                       className="w-full accent-primary"
                     />
                   </div>
@@ -223,7 +267,10 @@ function Search() {
                 <h3 className="font-semibold mb-3">Trier par</h3>
                 <select
                   value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
+                  onChange={(e) => {
+                    setSortBy(e.target.value);
+                    setPage(1);
+                  }}
                   className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:outline-none focus:border-primary"
                 >
                   <option value="relevance">Pertinence</option>
@@ -240,13 +287,23 @@ function Search() {
           <div className="lg:col-span-3">
             <div className="mb-6 flex justify-between items-center flex-wrap gap-2">
               <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
-                <strong>{filteredProducts.length}</strong> produit{filteredProducts.length > 1 ? 's' : ''} trouvé{filteredProducts.length > 1 ? 's' : ''}
+                <strong>{pagination?.total ?? results.length}</strong> produit{(pagination?.total ?? results.length) > 1 ? 's' : ''} trouvé{(pagination?.total ?? results.length) > 1 ? 's' : ''}
               </p>
             </div>
 
-            {filteredProducts.length > 0 ? (
+            {error && (
+              <div className="mb-6 p-4 rounded-lg bg-red-50 border border-red-100 text-red-600">
+                {error}
+              </div>
+            )}
+
+            {loading ? (
+              <div className="flex justify-center items-center py-20">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
+              </div>
+            ) : results.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredProducts.map(product => (
+                {results.map(product => (
                   <ProductCard key={product.id} product={product} />
                 ))}
               </div>
@@ -263,6 +320,30 @@ function Search() {
                 >
                   Réinitialiser les filtres
                 </button>
+              </div>
+            )}
+
+            {pagination?.pages > 1 && !loading && (
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-10">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Page {page} sur {pagination.pages}
+                </p>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+                    disabled={page === 1}
+                    className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Précédent
+                  </button>
+                  <button
+                    onClick={() => setPage((prev) => (pagination ? Math.min(pagination.pages, prev + 1) : prev))}
+                    disabled={page === pagination.pages}
+                    className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Suivant
+                  </button>
+                </div>
               </div>
             )}
           </div>

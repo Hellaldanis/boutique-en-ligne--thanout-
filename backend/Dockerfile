@@ -1,11 +1,11 @@
 # ================================
 # Dockerfile Backend - Thanout API
-# Node.js + Express + Prisma + SQLite
+# Node.js + Express + Prisma + PostgreSQL
 # ================================
 
 FROM node:20-alpine
 
-# Installer les dépendances système pour SQLite et Prisma
+# Installer les dépendances système pour Prisma + PostgreSQL
 RUN apk add --no-cache openssl
 
 # Définir le répertoire de travail
@@ -17,7 +17,6 @@ COPY prisma ./prisma/
 
 # Installer les dépendances
 RUN npm ci --only=production
-RUN npm install -g prisma
 
 # Générer le client Prisma
 RUN npx prisma generate
@@ -25,13 +24,12 @@ RUN npx prisma generate
 # Copier le reste du code source
 COPY . .
 
-# Créer le dossier pour la base de données SQLite
-RUN mkdir -p /app/prisma
+# Créer le dossier de logs
+RUN mkdir -p /app/logs
 
 # Variables d'environnement par défaut
 ENV NODE_ENV=production
 ENV PORT=5000
-ENV DATABASE_URL="file:./dev.db"
 
 # Exposer le port
 EXPOSE 5000

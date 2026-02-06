@@ -10,3 +10,12 @@
 
 [build.environment]
   NODE_VERSION = "18"
+
+# Production context – set VITE_API_URL in Netlify dashboard
+# Example: https://thanout-api.onrender.com/api
+[context.production.environment]
+  # VITE_API_URL is set in the Netlify dashboard
+
+# Deploy preview context
+[context.deploy-preview.environment]
+  # VITE_API_URL is set in the Netlify dashboard

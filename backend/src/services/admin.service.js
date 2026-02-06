@@ -1,7 +1,5 @@
-const { PrismaClient } = require('@prisma/client');
+const prisma = require('../lib/prisma');
 const { logger } = require('../middlewares/errorHandler.middleware');
-
-const prisma = new PrismaClient();
 
 class AdminService {
   // Get dashboard statistics
@@ -99,23 +97,26 @@ class AdminService {
         take: 5
       });
 
-      const topProductsWithDetails = await Promise.all(
+      const topProductsWithDetails = (await Promise.all(
         topProducts.map(async (item) => {
           const product = await prisma.product.findUnique({
             where: { id: item.productId },
             select: { id: true, name: true, price: true, images: true }
           });
+          if (!product) return null;
           return {
             ...product,
             salesCount: item._sum.quantity,
-            revenue: product.price * item._sum.quantity
+            revenue: parseFloat(product.price) * item._sum.quantity
           };
         })
-      );
+      )).filter(Boolean);
 
       // Calculate percentage changes
-      const revenueChange = lastMonthRevenue._sum.totalAmount
-        ? ((currentMonthRevenue._sum.totalAmount - lastMonthRevenue._sum.totalAmount) / lastMonthRevenue._sum.totalAmount) * 100
+      const lastRev = parseFloat(lastMonthRevenue._sum.totalAmount) || 0;
+      const currRev = parseFloat(currentMonthRevenue._sum.totalAmount) || 0;
+      const revenueChange = lastRev
+        ? ((currRev - lastRev) / lastRev) * 100
         : 0;
 
       const ordersChange = lastMonthOrders
@@ -298,12 +299,12 @@ class AdminService {
       const skip = (page - 1) * limit;
       let where = {};
 
-      // Search filter - SQLite ne supporte pas mode: 'insensitive'
+      // Search filter
       if (search) {
         where.OR = [
-          { email: { contains: search } },
-          { firstName: { contains: search } },
-          { lastName: { contains: search } }
+          { email: { contains: search, mode: 'insensitive' } },
+          { firstName: { contains: search, mode: 'insensitive' } },
+          { lastName: { contains: search, mode: 'insensitive' } }
         ];
       }
 

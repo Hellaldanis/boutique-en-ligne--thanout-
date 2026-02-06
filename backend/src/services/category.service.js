@@ -1,6 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
-
-const prisma = new PrismaClient();
+const prisma = require('../lib/prisma');
 
 class CategoryService {
   // Obtenir toutes les catégories
@@ -24,7 +22,7 @@ class CategoryService {
 
   // Obtenir une catégorie par slug
   async getCategoryBySlug(slug) {
-    const category = await prisma.category.findUnique({
+    const category = await prisma.category.findFirst({
       where: { slug, isActive: true },
       include: {
         subCategories: {

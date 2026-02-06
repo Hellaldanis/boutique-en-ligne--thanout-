@@ -1,6 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
-
-const prisma = new PrismaClient();
+const prisma = require('../lib/prisma');
 
 class OrderService {
   // Créer une commande
@@ -43,10 +41,10 @@ class OrderService {
         variantId: variant?.id,
         productName: product.name,
         productSku: product.sku,
-        variantDetails: variant ? {
+        variantDetails: variant ? JSON.stringify({
           type: variant.variantType,
           value: variant.variantValue
-        } : null,
+        }) : null,
         unitPrice,
         quantity: item.quantity,
         subtotal: itemSubtotal,

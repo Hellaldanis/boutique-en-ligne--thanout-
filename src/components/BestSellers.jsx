@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import ProductCard from './ProductCard';
 import { API_ENDPOINTS } from '../config/api';
+import { getNormalizedProductArray } from '../utils/product';
 
 function BestSellers() {
   const [bestSellers, setBestSellers] = useState([]);
@@ -11,10 +12,10 @@ function BestSellers() {
   useEffect(() => {
     const fetchBestSellers = async () => {
       try {
-        const response = await fetch(`${API_ENDPOINTS.PRODUCTS.LIST}?sortBy=popular&limit=8`);
+        const response = await fetch(`${API_ENDPOINTS.PRODUCTS.LIST}?isBestseller=true&sortBy=viewCount&sortOrder=desc&limit=8`);
         if (response.ok) {
           const data = await response.json();
-          setBestSellers(data.products || data || []);
+          setBestSellers(getNormalizedProductArray(data));
         }
       } catch (error) {
         console.error('Erreur lors du chargement des meilleures ventes:', error);

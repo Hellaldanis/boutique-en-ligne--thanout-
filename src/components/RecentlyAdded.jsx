@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import ProductCard from './ProductCard';
 import { API_ENDPOINTS } from '../config/api';
+import { getNormalizedProductArray } from '../utils/product';
 
 function RecentlyAdded() {
   const [recentProducts, setRecentProducts] = useState([]);
@@ -11,10 +12,10 @@ function RecentlyAdded() {
   useEffect(() => {
     const fetchRecentProducts = async () => {
       try {
-        const response = await fetch(`${API_ENDPOINTS.PRODUCTS.LIST}?sortBy=newest&limit=8`);
+        const response = await fetch(`${API_ENDPOINTS.PRODUCTS.LIST}?isNew=true&sortBy=createdAt&sortOrder=desc&limit=8`);
         if (response.ok) {
           const data = await response.json();
-          setRecentProducts(data.products || data || []);
+          setRecentProducts(getNormalizedProductArray(data));
         }
       } catch (error) {
         console.error('Erreur lors du chargement des nouveautés:', error);

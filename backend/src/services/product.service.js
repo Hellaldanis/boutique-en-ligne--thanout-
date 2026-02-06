@@ -1,6 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
-
-const prisma = new PrismaClient();
+const prisma = require('../lib/prisma');
 
 class ProductService {
   // Obtenir tous les produits avec filtres
@@ -16,11 +14,15 @@ class ProductService {
       isFeatured,
       isNew,
       isBestseller,
+      onSale,
       sortBy = 'createdAt',
       sortOrder = 'desc'
     } = filters;
 
-    const skip = (page - 1) * limit;
+    const currentPage = parseInt(page) || 1;
+    const perPage = parseInt(limit) || 20;
+    const skip = (currentPage - 1) * perPage;
+
     const where = { isActive: true };
 
     if (categoryId) where.categoryId = parseInt(categoryId);
@@ -29,20 +31,40 @@ class ProductService {
     if (isNew !== undefined) where.isNew = isNew === 'true';
     if (isBestseller !== undefined) where.isBestseller = isBestseller === 'true';
 
+    const andConditions = [];
+
     if (minPrice || maxPrice) {
-      where.price = {};
-      if (minPrice) where.price.gte = parseFloat(minPrice);
-      if (maxPrice) where.price.lte = parseFloat(maxPrice);
+      const priceFilter = {};
+      if (minPrice) priceFilter.gte = parseFloat(minPrice);
+      if (maxPrice) priceFilter.lte = parseFloat(maxPrice);
+      andConditions.push({ price: priceFilter });
     }
 
-    // SQLite ne supporte pas mode: 'insensitive', on utilise contains simple
     if (search) {
-      const searchLower = search.toLowerCase();
-      where.OR = [
-        { name: { contains: search } },
-        { description: { contains: search } }
-      ];
+      andConditions.push({
+        OR: [
+          { name: { contains: search, mode: 'insensitive' } },
+          { description: { contains: search, mode: 'insensitive' } }
+        ]
+      });
     }
+
+    if (onSale === 'true') {
+      andConditions.push({
+        OR: [
+          { discountPercentage: { gt: 0 } },
+          { oldPrice: { not: null } }
+        ]
+      });
+    }
+
+    if (andConditions.length) {
+      where.AND = andConditions;
+    }
+
+    const allowedSortFields = ['createdAt', 'price', 'viewCount', 'name', 'stockQuantity'];
+    const normalizedSortBy = allowedSortFields.includes(sortBy) ? sortBy : 'createdAt';
+    const normalizedSortOrder = sortOrder === 'asc' ? 'asc' : 'desc';
 
     const [products, total] = await Promise.all([
       prisma.product.findMany({
@@ -58,9 +80,9 @@ class ProductService {
             select: { reviews: true }
           }
         },
-        orderBy: { [sortBy]: sortOrder },
+        orderBy: { [normalizedSortBy]: normalizedSortOrder },
         skip,
-        take: parseInt(limit)
+        take: perPage
       }),
       prisma.product.count({ where })
     ]);
@@ -84,10 +106,10 @@ class ProductService {
     return {
       products: productsWithRating,
       pagination: {
-        page: parseInt(page),
-        limit: parseInt(limit),
+        page: currentPage,
+        limit: perPage,
         total,
-        pages: Math.ceil(total / limit)
+        pages: Math.ceil(total / perPage)
       }
     };
   }

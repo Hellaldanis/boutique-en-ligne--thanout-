@@ -17,6 +17,7 @@ const {
 router.post('/register', authLimiter, registerValidation, validate, authController.register);
 router.post('/login', authLimiter, loginValidation, validate, authController.login);
 router.post('/logout', authController.logout);
+router.post('/refresh-token', authController.refreshToken);
 router.get('/verify-email/:token', authController.verifyEmail);
 router.post('/forgot-password', authLimiter, forgotPasswordValidation, validate, authController.forgotPassword);
 router.post('/reset-password', authLimiter, resetPasswordValidation, validate, authController.resetPassword);

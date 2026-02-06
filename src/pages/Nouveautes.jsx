@@ -4,6 +4,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ProductCard from '../components/ProductCard';
 import { API_ENDPOINTS } from '../config/api';
+import { getNormalizedProductArray } from '../utils/product';
 
 function Nouveautes() {
   const [sortBy, setSortBy] = useState('newest');
@@ -14,10 +15,10 @@ function Nouveautes() {
   useEffect(() => {
     const fetchNewProducts = async () => {
       try {
-        const response = await fetch(`${API_ENDPOINTS.PRODUCTS.LIST}?sortBy=newest`);
+        const response = await fetch(`${API_ENDPOINTS.PRODUCTS.LIST}?isNew=true&sortBy=createdAt&sortOrder=desc`);
         if (response.ok) {
           const data = await response.json();
-          setProducts(data.products || data || []);
+          setProducts(getNormalizedProductArray(data));
         }
       } catch (error) {
         console.error('Erreur lors du chargement des nouveautés:', error);
@@ -31,7 +32,7 @@ function Nouveautes() {
 
   // Filter only new products
   const newProducts = useMemo(() => {
-    let filtered = products.filter(product => product.isNew === true);
+    let filtered = [...products];
 
     switch (sortBy) {
       case 'newest':
@@ -44,7 +45,7 @@ function Nouveautes() {
         filtered.sort((a, b) => b.price - a.price);
         break;
       case 'rating':
-        filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+        filtered.sort((a, b) => (b.averageRating || b.rating || 0) - (a.averageRating || a.rating || 0));
         break;
       default:
         break;

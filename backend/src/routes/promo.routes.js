@@ -1,9 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { PrismaClient } = require('@prisma/client');
+const prisma = require('../lib/prisma');
 const { optionalAuth } = require('../middlewares/auth.middleware');
-
-const prisma = new PrismaClient();
 
 // Validation de code promo (route publique)
 router.get('/validate/:code', optionalAuth, async (req, res, next) => {
@@ -45,7 +43,7 @@ router.get('/validate/:code', optionalAuth, async (req, res, next) => {
     }
 
     // Vérifier la limite d'utilisation
-    if (promoCode.usageLimit && promoCode.usedCount >= promoCode.usageLimit) {
+    if (promoCode.usageLimit && promoCode.usageCount >= promoCode.usageLimit) {
       return res.status(400).json({ 
         success: false,
         message: 'Ce code promo a atteint sa limite d\'utilisation' 

@@ -162,9 +162,14 @@ const validatePromoCodeValidation = [
 ];
 
 // Validation pour les IDs dans les paramètres
+// Supports :id, :productId, :reviewId, :orderId, :itemId, etc.
 const idParamValidation = [
-  param('id')
-    .isInt({ min: 1 }).withMessage('ID invalide')
+  param('id').optional().isInt({ min: 1 }).withMessage('ID invalide'),
+  param('productId').optional().isInt({ min: 1 }).withMessage('ID produit invalide'),
+  param('reviewId').optional().isInt({ min: 1 }).withMessage('ID avis invalide'),
+  param('orderId').optional().isInt({ min: 1 }).withMessage('ID commande invalide'),
+  param('itemId').optional().isInt({ min: 1 }).withMessage('ID article invalide'),
+  param('categoryId').optional().isInt({ min: 1 }).withMessage('ID catégorie invalide'),
 ];
 
 // Validation pour la newsletter

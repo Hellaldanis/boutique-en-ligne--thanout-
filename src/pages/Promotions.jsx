@@ -4,6 +4,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ProductCard from '../components/ProductCard';
 import { API_ENDPOINTS } from '../config/api';
+import { getNormalizedProductArray } from '../utils/product';
 
 function Promotions() {
   const [sortBy, setSortBy] = useState('discount-desc');
@@ -14,10 +15,10 @@ function Promotions() {
   useEffect(() => {
     const fetchPromotions = async () => {
       try {
-        const response = await fetch(`${API_ENDPOINTS.PRODUCTS.LIST}?onSale=true`);
+        const response = await fetch(`${API_ENDPOINTS.PRODUCTS.LIST}?onSale=true&sortBy=price&sortOrder=asc`);
         if (response.ok) {
           const data = await response.json();
-          setProducts(data.products || data || []);
+          setProducts(getNormalizedProductArray(data));
         }
       } catch (error) {
         console.error('Erreur lors du chargement des promotions:', error);
@@ -35,10 +36,10 @@ function Promotions() {
 
     switch (sortBy) {
       case 'discount-desc':
-        filtered.sort((a, b) => (b.discount || 0) - (a.discount || 0));
+        filtered.sort((a, b) => (b.discount || b.discountPercentage || 0) - (a.discount || a.discountPercentage || 0));
         break;
       case 'discount-asc':
-        filtered.sort((a, b) => (a.discount || 0) - (b.discount || 0));
+        filtered.sort((a, b) => (a.discount || a.discountPercentage || 0) - (b.discount || b.discountPercentage || 0));
         break;
       case 'price-asc':
         filtered.sort((a, b) => a.price - b.price);

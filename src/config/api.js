@@ -8,7 +8,7 @@ export const API_ENDPOINTS = {
     LOGIN: `${API_BASE_URL}/auth/login`,
     REGISTER: `${API_BASE_URL}/auth/register`,
     LOGOUT: `${API_BASE_URL}/auth/logout`,
-    REFRESH: `${API_BASE_URL}/auth/refresh`,
+    REFRESH: `${API_BASE_URL}/auth/refresh-token`,
     PROFILE: `${API_BASE_URL}/auth/profile`,
   },
   
@@ -35,7 +35,7 @@ export const API_ENDPOINTS = {
     ADD: `${API_BASE_URL}/cart/items`,
     UPDATE: (id) => `${API_BASE_URL}/cart/items/${id}`,
     REMOVE: (id) => `${API_BASE_URL}/cart/items/${id}`,
-    CLEAR: `${API_BASE_URL}/cart/clear`,
+    CLEAR: `${API_BASE_URL}/cart`,
   },
   
   // Orders
@@ -61,7 +61,9 @@ export const API_ENDPOINTS = {
   REVIEWS: {
     BASE: `${API_BASE_URL}/reviews`,
     PRODUCT: (productId) => `${API_BASE_URL}/reviews/product/${productId}`,
-    CREATE: `${API_BASE_URL}/reviews`,
+    CREATE: (productId) => `${API_BASE_URL}/reviews/product/${productId}`,
+    MARK_HELPFUL: (reviewId) => `${API_BASE_URL}/reviews/${reviewId}/helpful`,
+    DELETE: (reviewId) => `${API_BASE_URL}/reviews/${reviewId}`,
   },
   
   // Newsletter
@@ -108,20 +110,53 @@ export const getAuthHeaders = () => {
   };
 };
 
-// Helper function for API calls
+// Helper function for API calls with automatic token refresh
 export const apiCall = async (url, options = {}) => {
-  try {
-    const response = await fetch(url, {
+  const doFetch = async (headers) => {
+    return fetch(url, {
       ...options,
+      credentials: 'include',
       headers: {
-        ...getAuthHeaders(),
+        ...headers,
         ...options.headers,
       },
     });
+  };
+
+  try {
+    let response = await doFetch(getAuthHeaders());
+
+    // If 401, try refreshing the token once
+    if (response.status === 401) {
+      try {
+        const refreshRes = await fetch(API_ENDPOINTS.AUTH.REFRESH, {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+        });
+
+        if (refreshRes.ok) {
+          const refreshData = await refreshRes.json();
+          const newToken = refreshData.accessToken;
+          if (newToken) {
+            localStorage.setItem('accessToken', newToken);
+            localStorage.setItem('token', newToken);
+            // Retry original request with new token
+            const newHeaders = {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${newToken}`,
+            };
+            response = await doFetch(newHeaders);
+          }
+        }
+      } catch (refreshError) {
+        // Refresh failed — continue with original 401 response
+      }
+    }
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Une erreur est survenue');
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.message || error.error || 'Une erreur est survenue');
     }
 
     return await response.json();
