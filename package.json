@@ -16,7 +16,9 @@
   "author": "Thanout",
   "license": "MIT",
   "devDependencies": {
+    "@tailwindcss/vite": "^4.1.18",
     "@vitejs/plugin-react": "^5.1.1",
+    "tailwindcss": "^4.1.18",
     "vite": "^5.0.0"
   },
   "dependencies": {
