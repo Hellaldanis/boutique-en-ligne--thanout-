@@ -2,42 +2,42 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import { API_ENDPOINTS, getAuthHeaders } from '../config/api';
+import { useAuthStore } from '../store';
 
 function Profile() {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
+  const { user: authUser, isAuthenticated, fetchProfile, logout } = useAuthStore((state) => ({
+    user: state.user,
+    isAuthenticated: state.isAuthenticated,
+    fetchProfile: state.fetchProfile,
+    logout: state.logout
+  }));
+  const [user, setUser] = useState(authUser);
   const [loading, setLoading] = useState(true);
   const purchaseHistory = JSON.parse(localStorage.getItem('purchaseHistory') || '[]');
   const returns = JSON.parse(localStorage.getItem('returns') || '[]');
   const MAX_RETURNS = 3;
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const response = await fetch(API_ENDPOINTS.AUTH.PROFILE, {
-          headers: getAuthHeaders()
-        });
+    const fetchProfileData = async () => {
+      if (!isAuthenticated) {
+        navigate('/login');
+        return;
+      }
 
-        if (response.ok) {
-          const data = await response.json();
-          setUser(data.user || data);
-        } else {
-          // Fallback to localStorage
-          const localUser = JSON.parse(localStorage.getItem('user') || '{}');
-          setUser(localUser);
-        }
+      try {
+        const freshUser = await fetchProfile();
+        setUser(freshUser);
       } catch (error) {
         console.error('Erreur lors du chargement du profil:', error);
-        const localUser = JSON.parse(localStorage.getItem('user') || '{}');
-        setUser(localUser);
+        navigate('/login');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchProfile();
-  }, []);
+    fetchProfileData();
+  }, [isAuthenticated, fetchProfile, navigate]);
 
   // Calculate statistics
   const totalPurchased = purchaseHistory.reduce((sum, order) => sum + (order.items?.length || 0), 0);
@@ -47,12 +47,7 @@ function Profile() {
   const returnsRemaining = Math.max(0, MAX_RETURNS - totalReturned);
 
   const handleLogout = () => {
-    localStorage.removeItem('user');
-    localStorage.removeItem('isLoggedIn');
-    localStorage.removeItem('token');
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('isAdmin');
-    navigate('/login');
+    logout().finally(() => navigate('/login'));
   };
 
   // Show loading

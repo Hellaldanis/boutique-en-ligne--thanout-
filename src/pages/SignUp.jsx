@@ -3,10 +3,15 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import { API_ENDPOINTS } from '../config/api';
+import { useAuthStore } from '../store';
 
 function SignUp() {
   const navigate = useNavigate();
+  const { register: registerUser, isLoading, setUser } = useAuthStore((state) => ({
+    register: state.register,
+    isLoading: state.isLoading,
+    setUser: state.setUser
+  }));
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -16,6 +21,8 @@ function SignUp() {
     confirmPassword: '',
     terms: false
   });
+  const [fieldErrors, setFieldErrors] = useState({});
+  const [submitError, setSubmitError] = useState('');
 
   const handleChange = (e) => {
     const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
@@ -25,57 +32,40 @@ function SignUp() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    setFieldErrors({});
+    setSubmitError('');
+
     if (formData.password !== formData.confirmPassword) {
-      alert('Les mots de passe ne correspondent pas !');
+      setSubmitError('Les mots de passe ne correspondent pas.');
       return;
     }
 
     if (!formData.terms) {
-      alert('Veuillez accepter les conditions d\'utilisation');
+      setSubmitError('Veuillez accepter les conditions d\'utilisation.');
       return;
     }
 
     try {
-      // Préparer les données (exclure phone si vide)
-      const registerData = {
+      const registerPayload = {
         firstName: formData.firstName,
         lastName: formData.lastName,
         email: formData.email,
         password: formData.password
       };
-      
-      // Ajouter le téléphone seulement s'il est renseigné
+
       if (formData.phone && formData.phone.trim()) {
-        registerData.phone = formData.phone.trim();
+        registerPayload.phone = formData.phone.trim();
       }
 
-      const response = await fetch(API_ENDPOINTS.AUTH.REGISTER, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(registerData)
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        alert(data.message || 'Erreur lors de l\'inscription');
-        return;
-      }
-
-      // Stocker le token et les infos utilisateur
-      const token = data.accessToken || data.token;
-      localStorage.setItem('token', token);
-      localStorage.setItem('accessToken', token);
-      localStorage.setItem('user', JSON.stringify(data.user));
-      localStorage.setItem('isLoggedIn', 'true');
-      
+      await registerUser(registerPayload);
       alert('Inscription réussie ! Bienvenue sur Thanout 🎉');
-      navigate('/');
+      navigate('/profile');
     } catch (error) {
-      console.error('Erreur:', error);
-      alert('Erreur lors de l\'inscription. Veuillez réessayer.');
+      console.error('Erreur inscription:', error);
+      if (error.details) {
+        setFieldErrors(error.details);
+      }
+      setSubmitError(error.message || 'Erreur lors de l\'inscription.');
     }
   };
 
@@ -86,11 +76,16 @@ function SignUp() {
       name: 'Google User',
       avatar: 'https://lh3.googleusercontent.com/a/default-user=s96-c'
     };
-    localStorage.setItem('user', JSON.stringify(googleUser));
-    localStorage.setItem('isLoggedIn', 'true');
+    setUser(googleUser);
     alert('Inscription avec Google réussie !');
     navigate('/');
   };
+
+  const renderFieldError = (field) => (
+    fieldErrors[field] ? (
+      <p className="mt-1 text-sm text-red-500">{fieldErrors[field]}</p>
+    ) : null
+  );
 
   return (
     <div className="min-h-screen relative overflow-hidden">
@@ -165,6 +160,11 @@ function SignUp() {
             </motion.div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
+              {(submitError) && (
+                <div className="p-3 rounded-lg bg-red-50 border border-red-100 text-red-600 text-sm">
+                  {submitError}
+                </div>
+              )}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium mb-2">Prénom *</label>
@@ -177,6 +177,7 @@ function SignUp() {
                     className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent"
                     placeholder="Ahmed"
                   />
+                  {renderFieldError('firstName')}
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-2">Nom *</label>
@@ -189,6 +190,7 @@ function SignUp() {
                     className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent"
                     placeholder="Benali"
                   />
+                  {renderFieldError('lastName')}
                 </div>
               </div>
 
@@ -203,6 +205,7 @@ function SignUp() {
                   className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent"
                   placeholder="votre@email.com"
                 />
+                  {renderFieldError('email')}
               </div>
 
               <div>
@@ -216,6 +219,7 @@ function SignUp() {
                   className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent"
                   placeholder="0555 12 34 56"
                 />
+                  {renderFieldError('phone')}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -231,6 +235,7 @@ function SignUp() {
                     className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent"
                     placeholder="••••••••"
                   />
+                  {renderFieldError('password')}
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-2">Confirmer le mot de passe *</label>
@@ -272,9 +277,10 @@ function SignUp() {
                 type="submit"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full py-4 bg-gradient-to-r from-primary to-blue-600 text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition-all"
+                disabled={isLoading}
+                className={`w-full py-4 bg-gradient-to-r from-primary to-blue-600 text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition-all ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
               >
-                Créer mon compte
+                {isLoading ? 'Création du compte...' : 'Créer mon compte'}
               </motion.button>
             </form>
 

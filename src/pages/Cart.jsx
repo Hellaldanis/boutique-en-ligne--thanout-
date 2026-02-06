@@ -3,18 +3,16 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import { useCartStore } from '../store';
+import { useCartStore, useAuthStore } from '../store';
 
 function Cart() {
   const { items, removeItem, updateQuantity, getTotal, clearCart } = useCartStore();
+  const { isAuthenticated } = useAuthStore((state) => ({ isAuthenticated: state.isAuthenticated }));
   const navigate = useNavigate();
 
   const handleCheckout = (e) => {
     e.preventDefault();
-    // Vérifier si l'utilisateur est connecté
-    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-    
-    if (!isLoggedIn) {
+    if (!isAuthenticated) {
       // Rediriger vers la page de connexion avec retour vers checkout
       navigate('/login?redirect=checkout');
     } else {

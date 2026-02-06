@@ -1,5 +1,56 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { API_ENDPOINTS } from '../config/api';
+
+const legacyAuthStorage = {
+  save(user, token) {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    if (token) {
+      localStorage.setItem('token', token);
+      localStorage.setItem('accessToken', token);
+    } else {
+      localStorage.removeItem('token');
+      localStorage.removeItem('accessToken');
+    }
+
+    if (user) {
+      localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem('isLoggedIn', 'true');
+      const isAdmin = user?.adminUser?.role === 'super_admin' || user?.adminUser?.role === 'admin';
+      localStorage.setItem('isAdmin', isAdmin ? 'true' : 'false');
+    } else {
+      localStorage.removeItem('user');
+      localStorage.removeItem('isLoggedIn');
+      localStorage.removeItem('isAdmin');
+    }
+  },
+  hydrate() {
+    if (typeof window === 'undefined') {
+      return { user: null, token: null, isLoggedIn: false };
+    }
+
+    try {
+      const storedUser = localStorage.getItem('user');
+      const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
+      const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+
+      if (storedUser && token && isLoggedIn) {
+        return {
+          user: JSON.parse(storedUser),
+          token,
+          isLoggedIn: true
+        };
+      }
+    } catch (error) {
+      console.error('Erreur lors de l\'hydratation legacy:', error);
+    }
+
+    return { user: null, token: null, isLoggedIn: false };
+  }
+};
 
 export const useCartStore = create(
   persist(
@@ -147,6 +198,148 @@ export const useOrderStore = create(
     }),
     {
       name: 'thanout-orders',
+    }
+  )
+);
+
+const buildAuthHeaders = (token) => ({
+  'Content-Type': 'application/json',
+  ...(token ? { Authorization: `Bearer ${token}` } : {})
+});
+
+export const useAuthStore = create(
+  persist(
+    (set, get) => {
+      const legacyState = legacyAuthStorage.hydrate();
+      return {
+        user: legacyState.user,
+        accessToken: legacyState.token,
+        isAuthenticated: legacyState.isLoggedIn,
+        isLoading: false,
+        error: null,
+
+        register: async (payload) => {
+        set({ isLoading: true, error: null });
+        try {
+          const response = await fetch(API_ENDPOINTS.AUTH.REGISTER, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify(payload)
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            const error = new Error(data.message || data.error || 'Erreur lors de l\'inscription');
+            if (data.details) {
+              error.details = data.details;
+            }
+            throw error;
+          }
+
+          const token = data.accessToken || data.token;
+          legacyAuthStorage.save(data.user, token);
+          set({ user: data.user, accessToken: token, isAuthenticated: true });
+          return data.user;
+        } catch (error) {
+          set({ error: error.message });
+          throw error;
+        } finally {
+          set({ isLoading: false });
+        }
+      },
+
+        login: async (credentials) => {
+        set({ isLoading: true, error: null });
+        try {
+          const response = await fetch(API_ENDPOINTS.AUTH.LOGIN, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify(credentials)
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            const error = new Error(data.message || data.error || 'Erreur lors de la connexion');
+            throw error;
+          }
+
+          const token = data.accessToken || data.token;
+          legacyAuthStorage.save(data.user, token);
+          set({ user: data.user, accessToken: token, isAuthenticated: true });
+          return data.user;
+        } catch (error) {
+          set({ error: error.message });
+          throw error;
+        } finally {
+          set({ isLoading: false });
+        }
+      },
+
+        logout: async () => {
+        try {
+          await fetch(API_ENDPOINTS.AUTH.LOGOUT, {
+            method: 'POST',
+            credentials: 'include'
+          });
+        } catch (error) {
+          console.error('Erreur lors de la déconnexion:', error);
+        } finally {
+          legacyAuthStorage.save(null, null);
+          set({ user: null, accessToken: null, isAuthenticated: false });
+        }
+      },
+
+        fetchProfile: async () => {
+        const token = get().accessToken ||
+          (typeof window !== 'undefined' ? (localStorage.getItem('accessToken') || localStorage.getItem('token')) : null);
+
+        if (!token) {
+          throw new Error('Non authentifié');
+        }
+
+        const response = await fetch(API_ENDPOINTS.AUTH.PROFILE, {
+          method: 'GET',
+          headers: buildAuthHeaders(token),
+          credentials: 'include'
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          const error = new Error(data.message || data.error || 'Impossible de récupérer le profil');
+          throw error;
+        }
+
+        legacyAuthStorage.save(data.user || data, token);
+        set({ user: data.user || data, accessToken: token, isAuthenticated: true });
+        return data.user || data;
+      },
+
+        setUser: (user) => {
+        const token = get().accessToken;
+        legacyAuthStorage.save(user, token);
+        set({ user, isAuthenticated: !!user });
+      },
+
+        hydrateFromLegacyStorage: () => {
+          const legacy = legacyAuthStorage.hydrate();
+          if (legacy.user && legacy.token) {
+            set({ user: legacy.user, accessToken: legacy.token, isAuthenticated: legacy.isLoggedIn });
+          }
+        }
+      };
+    },
+    {
+      name: 'thanout-auth',
+      partialize: (state) => ({
+        user: state.user,
+        accessToken: state.accessToken,
+        isAuthenticated: state.isAuthenticated
+      })
     }
   )
 );

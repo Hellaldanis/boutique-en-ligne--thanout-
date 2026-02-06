@@ -1,22 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useCartStore, useFavoritesStore, useSearchStore } from '../store';
+import { useCartStore, useFavoritesStore, useSearchStore, useAuthStore } from '../store';
 import CartDrawer from './CartDrawer';
 
 function Header() {
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [user, setUser] = useState(null);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchInput, setSearchInput] = useState('');
   const { items } = useCartStore();
   const { items: favorites } = useFavoritesStore();
   const { addRecentSearch } = useSearchStore();
+  const { user, isAuthenticated, hydrateFromLegacyStorage } = useAuthStore((state) => ({
+    user: state.user,
+    isAuthenticated: state.isAuthenticated,
+    hydrateFromLegacyStorage: state.hydrateFromLegacyStorage
+  }));
   const navigate = useNavigate();
   const location = useLocation();
+  const isAdmin = user?.adminUser?.role === 'super_admin' || user?.adminUser?.role === 'admin';
 
   const handleSearch = (e) => {
     if (e.key === 'Enter' && searchInput.trim()) {
@@ -34,40 +37,14 @@ function Header() {
     }
   };
 
-  // Fonction pour charger l'état utilisateur
-  const loadUserState = () => {
-    const loggedIn = localStorage.getItem('isLoggedIn') === 'true';
-    setIsLoggedIn(loggedIn);
-    
-    // Charger les infos utilisateur
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      try {
-        const userData = JSON.parse(storedUser);
-        setUser(userData);
-        // Vérifier si c'est un admin
-        const adminStatus = localStorage.getItem('isAdmin') === 'true' || 
-                            userData?.adminUser?.role === 'super_admin' || 
-                            userData?.adminUser?.role === 'admin';
-        setIsAdmin(adminStatus);
-      } catch (e) {
-        console.error('Erreur parsing user:', e);
-      }
-    } else {
-      setUser(null);
-      setIsAdmin(false);
-    }
-  };
-
-  // Recharger l'état à chaque changement de route
   useEffect(() => {
-    loadUserState();
-  }, [location.pathname]);
+    hydrateFromLegacyStorage();
+  }, [hydrateFromLegacyStorage]);
 
   // Écouter les événements de storage (pour les autres onglets)
   useEffect(() => {
     const handleStorageChange = () => {
-      loadUserState();
+      hydrateFromLegacyStorage();
     };
     
     window.addEventListener('storage', handleStorageChange);
@@ -246,7 +223,7 @@ function Header() {
             </Link>
 
             {/* Affichage conditionnel selon l'état de connexion */}
-            {isLoggedIn ? (
+            {isAuthenticated ? (
               <>
                 {/* Bouton Admin Panel si l'utilisateur est admin */}
                 {isAdmin && (
@@ -426,15 +403,15 @@ function Header() {
                   animate="open"
                 >
                   <Link
-                    to={isLoggedIn ? '/profile' : '/login'}
+                    to={isAuthenticated ? '/profile' : '/login'}
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="flex items-center gap-4 p-4 rounded-lg bg-primary/10 hover:bg-primary/20 transition-colors"
                   >
                     <span className="material-symbols-outlined text-primary">
-                      {isLoggedIn ? 'account_circle' : 'login'}
+                      {isAuthenticated ? 'account_circle' : 'login'}
                     </span>
                     <span className="flex-1 font-medium text-primary">
-                      {isLoggedIn ? 'Mon Profil' : 'Se connecter'}
+                      {isAuthenticated ? 'Mon Profil' : 'Se connecter'}
                     </span>
                     <span className="material-symbols-outlined text-primary">
                       chevron_right

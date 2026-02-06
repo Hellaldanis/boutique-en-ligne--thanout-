@@ -1,17 +1,24 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import { API_ENDPOINTS } from '../config/api';
+import { useAuthStore } from '../store';
 
 function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { login, isLoading, setUser } = useAuthStore((state) => ({
+    login: state.login,
+    isLoading: state.isLoading,
+    setUser: state.setUser
+  }));
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     remember: false
   });
+  const [submitError, setSubmitError] = useState('');
 
   const handleChange = (e) => {
     const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
@@ -21,47 +28,28 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    setSubmitError('');
+
     try {
-      const response = await fetch(API_ENDPOINTS.AUTH.LOGIN, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          email: formData.email,
-          password: formData.password
-        })
+      const user = await login({
+        email: formData.email,
+        password: formData.password
       });
 
-      const data = await response.json();
+      alert('Connexion réussie !');
 
-      if (!response.ok) {
-        alert(data.message || 'Erreur de connexion');
+      const redirectTarget = new URLSearchParams(location.search).get('redirect');
+      if (redirectTarget) {
+        const normalized = redirectTarget.startsWith('/') ? redirectTarget : `/${redirectTarget}`;
+        navigate(normalized);
         return;
       }
 
-      // Stocker le token et les infos utilisateur
-      const token = data.accessToken || data.token;
-      localStorage.setItem('token', token);
-      localStorage.setItem('accessToken', token);
-      localStorage.setItem('user', JSON.stringify(data.user));
-      localStorage.setItem('isLoggedIn', 'true');
-      
-      // Vérifier si c'est un admin
-      const isAdmin = data.user?.adminUser?.role === 'super_admin' || data.user?.adminUser?.role === 'admin';
-      localStorage.setItem('isAdmin', isAdmin ? 'true' : 'false');
-      
-      alert('Connexion réussie !');
-      
-      // Rediriger vers le dashboard admin si c'est un admin
-      if (isAdmin) {
-        navigate('/admin');
-      } else {
-        navigate('/');
-      }
+      const isAdminUser = user?.adminUser?.role === 'super_admin' || user?.adminUser?.role === 'admin';
+      navigate(isAdminUser ? '/admin' : '/');
     } catch (error) {
-      console.error('Erreur:', error);
-      alert('Erreur lors de la connexion. Veuillez réessayer.');
+      console.error('Erreur connexion:', error);
+      setSubmitError(error.message || 'Erreur lors de la connexion.');
     }
   };
 
@@ -72,8 +60,7 @@ function Login() {
       name: 'Google User',
       avatar: 'https://lh3.googleusercontent.com/a/default-user=s96-c'
     };
-    localStorage.setItem('user', JSON.stringify(googleUser));
-    localStorage.setItem('isLoggedIn', 'true');
+    setUser(googleUser);
     alert('Connexion avec Google réussie !');
     navigate('/');
   };
@@ -151,6 +138,11 @@ function Login() {
             </motion.div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
+              {submitError && (
+                <div className="p-3 rounded-lg bg-red-50 border border-red-100 text-red-600 text-sm">
+                  {submitError}
+                </div>
+              )}
               <div>
                 <label className="block text-sm font-medium mb-2">Email</label>
                 <input
@@ -197,9 +189,10 @@ function Login() {
                 type="submit"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full py-4 bg-gradient-to-r from-primary to-blue-600 text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition-all"
+                disabled={isLoading}
+                className={`w-full py-4 bg-gradient-to-r from-primary to-blue-600 text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition-all ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
               >
-                Se connecter
+                {isLoading ? 'Connexion en cours...' : 'Se connecter'}
               </motion.button>
 
               <div className="relative my-6">

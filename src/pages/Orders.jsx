@@ -3,30 +3,34 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import { useOrderStore } from '../store';
+import { useOrderStore, useAuthStore } from '../store';
 import { API_ENDPOINTS, getAuthHeaders } from '../config/api';
 
 function Orders() {
   const navigate = useNavigate();
   const { getUserOrders } = useOrderStore();
+  const { isAuthenticated, accessToken } = useAuthStore((state) => ({
+    isAuthenticated: state.isAuthenticated,
+    accessToken: state.accessToken
+  }));
   const [orders, setOrders] = useState([]);
   const [filterStatus, setFilterStatus] = useState('all');
   const [loading, setLoading] = useState(true);
 
   // Vérifier si l'utilisateur est connecté
-  const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-  const token = localStorage.getItem('token');
-
   useEffect(() => {
     const fetchOrders = async () => {
-      if (!isLoggedIn || !token) {
+      if (!isAuthenticated || !accessToken) {
         setLoading(false);
         return;
       }
 
       try {
         const response = await fetch(API_ENDPOINTS.ORDERS.USER_ORDERS, {
-          headers: getAuthHeaders()
+          headers: {
+            ...getAuthHeaders(),
+            Authorization: `Bearer ${accessToken}`
+          }
         });
 
         if (response.ok) {
@@ -48,9 +52,9 @@ function Orders() {
     };
 
     fetchOrders();
-  }, [isLoggedIn, token]);
+  }, [isAuthenticated, accessToken, getUserOrders]);
 
-  if (!isLoggedIn) {
+  if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <Header />

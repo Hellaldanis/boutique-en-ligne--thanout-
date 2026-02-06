@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ProductReviews from '../components/ProductReviews';
-import { useCartStore, useFavoritesStore } from '../store';
+import { useCartStore, useFavoritesStore, useAuthStore } from '../store';
 import { API_ENDPOINTS } from '../config/api';
 
 function ProductDetail() {
@@ -21,6 +21,7 @@ function ProductDetail() {
 
   const { addItem } = useCartStore();
   const { toggleFavorite, isFavorite } = useFavoritesStore();
+  const { isAuthenticated } = useAuthStore((state) => ({ isAuthenticated: state.isAuthenticated }));
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -89,9 +90,7 @@ function ProductDetail() {
     addItem({ ...product, selectedSize, selectedColor, quantity });
     
     // Vérifier si connecté
-    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-    
-    if (!isLoggedIn) {
+    if (!isAuthenticated) {
       // Rediriger vers login puis checkout
       navigate('/login?redirect=checkout');
     } else {

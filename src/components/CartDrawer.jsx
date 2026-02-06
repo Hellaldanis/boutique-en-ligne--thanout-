@@ -1,19 +1,17 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useCartStore } from '../store';
+import { useCartStore, useAuthStore } from '../store';
 
 function CartDrawer({ isOpen, onClose }) {
   const { items, removeItem, updateQuantity, getTotal, clearCart } = useCartStore();
+  const { isAuthenticated } = useAuthStore((state) => ({ isAuthenticated: state.isAuthenticated }));
   const navigate = useNavigate();
 
   const handleCheckout = () => {
     onClose(); // Fermer le drawer
     
-    // Vérifier si l'utilisateur est connecté
-    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-    
-    if (!isLoggedIn) {
+    if (!isAuthenticated) {
       // Rediriger vers la page de connexion avec retour vers checkout
       navigate('/login?redirect=checkout');
     } else {

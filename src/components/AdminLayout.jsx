@@ -14,44 +14,53 @@ import {
   BarChart3,
   Shield
 } from 'lucide-react';
+import { useAuthStore } from '../store';
 
 const AdminLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [loading, setLoading] = useState(true);
   const [adminUser, setAdminUser] = useState(null);
+  const { user, fetchProfile, hydrateFromLegacyStorage, logout } = useAuthStore((state) => ({
+    user: state.user,
+    fetchProfile: state.fetchProfile,
+    hydrateFromLegacyStorage: state.hydrateFromLegacyStorage,
+    logout: state.logout
+  }));
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
-    // Vérifier si l'utilisateur est admin
-    const checkAdmin = () => {
-      const token = localStorage.getItem('token');
-      const user = JSON.parse(localStorage.getItem('user') || '{}');
-      const isAdmin = localStorage.getItem('isAdmin') === 'true' || 
-                      user?.adminUser?.role === 'super_admin' || 
-                      user?.adminUser?.role === 'admin';
-      
-      if (!token || !isAdmin) {
+    const verifyAdmin = async () => {
+      try {
+        hydrateFromLegacyStorage();
+        let currentUser = user;
+        if (!currentUser) {
+          currentUser = await fetchProfile();
+        }
+
+        const hasAdminAccess = currentUser?.adminUser?.role === 'super_admin' || currentUser?.adminUser?.role === 'admin';
+
+        if (!hasAdminAccess) {
+          navigate('/login');
+          return;
+        }
+
+        setAdminUser(currentUser);
+        setIsAuthorized(true);
+      } catch (error) {
+        console.error('Erreur vérification admin:', error);
         navigate('/login');
-        return;
+      } finally {
+        setLoading(false);
       }
-      
-      setAdminUser(user);
-      setIsAuthorized(true);
-      setLoading(false);
     };
-    
-    checkAdmin();
-  }, [navigate]);
+
+    verifyAdmin();
+  }, [user, fetchProfile, hydrateFromLegacyStorage, navigate]);
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('user');
-    localStorage.removeItem('isLoggedIn');
-    localStorage.removeItem('isAdmin');
-    navigate('/login');
+    logout().finally(() => navigate('/login'));
   };
 
   // Afficher un loader pendant la vérification
